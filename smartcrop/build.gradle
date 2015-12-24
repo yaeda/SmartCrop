@@ -16,10 +16,19 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets { main { assets.srcDirs = ['src/main/assets', 'src/androidTest/assets/'] } }
+    packagingOptions {
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+    }
 }
 
 dependencies {
     compile 'com.android.support:appcompat-v7:23.+'
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    androidTestCompile 'com.fasterxml.jackson.core:jackson-core:2.6.4'
+    androidTestCompile 'com.fasterxml.jackson.core:jackson-databind:2.6.4'
+
     testCompile 'junit:junit:4.12'
 }
