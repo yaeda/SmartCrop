@@ -62,9 +62,26 @@ public class CropTest extends InstrumentationTestCase {
     }
 
     // crop should crop smartly
-    public void testCropSmartly() throws Exception {
+    public void testCropMonkeySmartly() throws Exception {
         AssetManager assetManager = getResoutce().getAssets();
         InputStream isJson = assetManager.open("test_monkey.json");
+        TestSet testSet = new ObjectMapper().readValue(isJson, TestSet.class);
+
+        InputStream isImage = assetManager.open(testSet.filename);
+        Bitmap bitmap = BitmapFactory.decodeStream(isImage);
+        SmartCrop.Result result = smartcrop.crop(bitmap, 1);
+
+        assertTrue(testSet.region.isInsideOf(result.topCrop));
+
+        // finalize
+        isJson.close();
+        isImage.close();
+        bitmap.recycle();
+    }
+
+    public void testCropFishSmartly() throws  Exception {
+        AssetManager assetManager = getResoutce().getAssets();
+        InputStream isJson = assetManager.open("test_fish.json");
         TestSet testSet = new ObjectMapper().readValue(isJson, TestSet.class);
 
         InputStream isImage = assetManager.open(testSet.filename);
