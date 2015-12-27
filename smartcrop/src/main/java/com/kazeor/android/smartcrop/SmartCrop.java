@@ -14,11 +14,7 @@ import java.io.IOException;
 public class SmartCrop {
     private static final String TAG = "SmartCrop";
 
-    private float mWidth = 0f;
-    private float mHeight = 0f;
-    private float mAspect = 0f;
-    private float mCropWidth = 0f;
-    private float mCropHeight = 0f;
+    private float mAspect = 1f;
 
     // detail
     private float mDetailWeight = 0.2f;
@@ -79,18 +75,7 @@ public class SmartCrop {
     public SmartCrop() {}
 
     public Result crop(Bitmap image, float aspect) {
-        mWidth = 250f; //100;
-        mHeight = 250f; //100;
-        //mWidth = aspect;
-        //mHeight = 1.f;
-        //mAspect = aspect;
-
-        float scale = Math.min(image.getWidth() / mWidth, image.getHeight() / mHeight);
-        mCropWidth = (int)Math.floor(mWidth * scale);
-        mCropHeight = (int)Math.floor(mHeight * scale);
-        mMinScale = Math.min(mMaxScale, Math.max(1 / scale, mMinScale));
-        Log.d(TAG, "mCropWidth x mCropHeight : " + mCropWidth + "x" + mCropHeight);
-        Log.d(TAG, "mMinScale : " + mMinScale);
+        mAspect = aspect;
 
         Result result = analyze(image);
 
@@ -291,10 +276,11 @@ public class SmartCrop {
     }
 
     private SparseArray<CropRegion> crops(int width, int height) {
+        float imageAspect = (float)width / (float)height;
+        float cropWidth = mAspect <= imageAspect ? height * mAspect : width;
+        float cropHeight = mAspect <= imageAspect ? height : width / mAspect;
+
         SparseArray<CropRegion> crops = new SparseArray<>();
-        float minDimension = (float)Math.min(width, height);
-        float cropWidth = mCropWidth != 0f ? mCropWidth : minDimension;
-        float cropHeight = mCropHeight != 0f ? mCropHeight : minDimension;
         int key = 0;
         for (float scale = mMaxScale; scale >= mMinScale; scale -= mScaleStep) {
             for (float y = 0f; y + cropHeight * scale <= height; y += mStep) {
@@ -304,6 +290,7 @@ public class SmartCrop {
                 }
             }
         }
+
         return crops;
     }
 
