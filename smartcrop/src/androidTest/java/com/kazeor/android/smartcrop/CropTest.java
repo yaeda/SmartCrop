@@ -1,28 +1,32 @@
 package com.kazeor.android.smartcrop;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.test.InstrumentationTestCase;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.InputStream;
-
 public class CropTest extends InstrumentationTestCase {
 
-    private static final String TAG = CropTest.class.getSimpleName();
     SmartCrop smartcrop = null;
 
     private Context getApplicationContext() {
         return getInstrumentation().getTargetContext().getApplicationContext();
     }
 
-    private Resources getResoutce() {
+    private Resources getResources() {
         return getApplicationContext().getResources();
+    }
+
+    private void testTestAsset(String testAssetFile) throws Exception {
+        TestSet testSet = AssetUtil.loadTestSet(getResources(), testAssetFile);
+        Bitmap bitmap = AssetUtil.loadTestBitmap(getResources(), testSet.filename);
+
+        SmartCrop.Result result = smartcrop.crop(bitmap, 1);
+
+        assertTrue(testSet.region.isInsideOf(result.topCrop));
+
+        bitmap.recycle();
     }
 
     public void setUp() throws Exception {
@@ -62,38 +66,8 @@ public class CropTest extends InstrumentationTestCase {
     }
 
     // crop should crop smartly
-    public void testCropMonkeySmartly() throws Exception {
-        AssetManager assetManager = getResoutce().getAssets();
-        InputStream isJson = assetManager.open("test_monkey.json");
-        TestSet testSet = new ObjectMapper().readValue(isJson, TestSet.class);
-
-        InputStream isImage = assetManager.open(testSet.filename);
-        Bitmap bitmap = BitmapFactory.decodeStream(isImage);
-        SmartCrop.Result result = smartcrop.crop(bitmap, 1);
-
-        assertTrue(testSet.region.isInsideOf(result.topCrop));
-
-        // finalize
-        isJson.close();
-        isImage.close();
-        bitmap.recycle();
+    public void testCropSmartly() throws Exception {
+        testTestAsset("test_monkey.json");
+        testTestAsset("test_fish.json");
     }
-
-    public void testCropFishSmartly() throws  Exception {
-        AssetManager assetManager = getResoutce().getAssets();
-        InputStream isJson = assetManager.open("test_fish.json");
-        TestSet testSet = new ObjectMapper().readValue(isJson, TestSet.class);
-
-        InputStream isImage = assetManager.open(testSet.filename);
-        Bitmap bitmap = BitmapFactory.decodeStream(isImage);
-        SmartCrop.Result result = smartcrop.crop(bitmap, 1);
-
-        assertTrue(testSet.region.isInsideOf(result.topCrop));
-
-        // finalize
-        isJson.close();
-        isImage.close();
-        bitmap.recycle();
-    }
-
 }

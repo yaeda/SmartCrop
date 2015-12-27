@@ -1,8 +1,5 @@
 package com.kazeor.android.smartcrop;
 
-/**
- * Created by 22715434 on 12/24/15.
- */
 public class TestSet {
     public String filename;
     public Region region;
