@@ -32,32 +32,32 @@ public class OptionTest extends InstrumentationTestCase {
 
     // crop should be something sane
     public void testAspectOption1by1() throws Exception {
-        SmartCrop.Result result = smartcrop.crop(bitmap, 1);
+        SmartCrop.CropResult cropResult = smartcrop.crop(bitmap, 1);
 
         assertEquals(
-                bitmap.getWidth() * result.topCrop.width,
-                bitmap.getHeight() * result.topCrop.height
+                bitmap.getWidth() * cropResult.topCrop.width,
+                bitmap.getHeight() * cropResult.topCrop.height
         );
     }
 
     public void testAspectOption16by9() throws Exception {
         float aspect = 16f / 9f;
-        SmartCrop.Result result = smartcrop.crop(bitmap, aspect);
+        SmartCrop.CropResult cropResult = smartcrop.crop(bitmap, aspect);
 
         assertEquals(
                 aspect,
-                (bitmap.getWidth() * result.topCrop.width) / (bitmap.getHeight() * result.topCrop.height),
+                (bitmap.getWidth() * cropResult.topCrop.width) / (bitmap.getHeight() * cropResult.topCrop.height),
                 ASSERT_FLOAT_DELTA
         );
     }
 
     public void testAspectOption9by16() throws Exception {
         float aspect = 9f / 16f;
-        SmartCrop.Result result = smartcrop.crop(bitmap, aspect);
+        SmartCrop.CropResult cropResult = smartcrop.crop(bitmap, aspect);
 
         assertEquals(
                 aspect,
-                (bitmap.getWidth() * result.topCrop.width) / (bitmap.getHeight() * result.topCrop.height),
+                (bitmap.getWidth() * cropResult.topCrop.width) / (bitmap.getHeight() * cropResult.topCrop.height),
                 ASSERT_FLOAT_DELTA
         );
     }

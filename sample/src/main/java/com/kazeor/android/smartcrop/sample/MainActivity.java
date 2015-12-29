@@ -80,16 +80,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // crop
-        SmartCrop.Result result = null;
+        SmartCrop.CropResult cropResult = null;
         if (bitmap != null) {
             SmartCrop smartcrop = new SmartCrop();
-            result = smartcrop.crop(bitmap, 1);
+            cropResult = smartcrop.crop(bitmap, 1);
         }
 
         // show result
-        if (result != null && result.topCrop != null) {
-            Log.d(TAG, result.topCrop.x + ", " + result.topCrop.y + ", " +
-                    result.topCrop.width + ", " + result.topCrop.height);
+        if (cropResult != null && cropResult.topCrop != null) {
+            Log.d(TAG, cropResult.topCrop.x + ", " + cropResult.topCrop.y + ", " +
+                    cropResult.topCrop.width + ", " + cropResult.topCrop.height);
         }
     }
 

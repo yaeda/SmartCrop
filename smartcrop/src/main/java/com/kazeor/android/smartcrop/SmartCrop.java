@@ -3,7 +3,6 @@ package com.kazeor.android.smartcrop;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Environment;
-import android.util.Log;
 import android.util.SparseArray;
 
 import java.io.File;
@@ -49,7 +48,7 @@ public class SmartCrop {
 
     private boolean mDebug = false;
 
-    public class Result {
+    public class CropResult {
         public CropRegion topCrop;
         public SparseArray<CropRegion> crops;
     }
@@ -59,13 +58,13 @@ public class SmartCrop {
         public float y;
         public float width;
         public float height;
-        public Score score = null;
+        public CropScore score = null;
         public CropRegion(float x, float y, float width, float height) {
             this.x = x; this.y = y; this.width = width; this.height = height;
         }
     }
 
-    class Score {
+    class CropScore {
         float detail = 0f;
         float saturation = 0f;
         float skin = 0f;
@@ -74,23 +73,23 @@ public class SmartCrop {
 
     public SmartCrop() {}
 
-    public Result crop(Bitmap image, float aspect) {
+    public CropResult crop(Bitmap image, float aspect) {
         mAspect = aspect;
 
-        Result result = analyze(image);
+        CropResult cropResult = analyze(image);
 
         // alignment for our usage
-        if (result.topCrop != null) {
-            result.topCrop.x /= image.getWidth();
-            result.topCrop.y /= image.getHeight();
-            result.topCrop.width /= image.getWidth();
-            result.topCrop.height /= image.getHeight();
+        if (cropResult.topCrop != null) {
+            cropResult.topCrop.x /= image.getWidth();
+            cropResult.topCrop.y /= image.getHeight();
+            cropResult.topCrop.width /= image.getWidth();
+            cropResult.topCrop.height /= image.getHeight();
         }
 
-        return result;
+        return cropResult;
     }
 
-    private Result analyze(Bitmap image) {
+    private CropResult analyze(Bitmap image) {
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -130,9 +129,9 @@ public class SmartCrop {
         scoreImage.recycle();
 
         // result
-        Result result = new Result();
-        result.topCrop = topCrop;
-        result.crops = crops;
+        CropResult cropResult = new CropResult();
+        cropResult.topCrop = topCrop;
+        cropResult.crops = crops;
 
         if (mDebug && topCrop != null) {
             for (int y = 0; y < height; y++) {
@@ -162,7 +161,7 @@ public class SmartCrop {
             saveBitmap(debugImage, "debug.png");
             debugImage.recycle();
         }
-        return result;
+        return cropResult;
     }
 
     private void saveBitmap(Bitmap bitmap, String filename) {
@@ -294,8 +293,8 @@ public class SmartCrop {
         return crops;
     }
 
-    private Score score(int width, int height, int[] scoreBuffer, CropRegion crop) {
-        Score score = new Score();
+    private CropScore score(int width, int height, int[] scoreBuffer, CropRegion crop) {
+        CropScore cropScore = new CropScore();
         int downSample = mScoreDownSample;
 
         for (int y = 0; y < height; y++) {
@@ -307,14 +306,14 @@ public class SmartCrop {
                 int b = Color.blue(color);
                 float importanceValue = importance(crop, x * downSample, y * downSample);
                 float detail = g / 255f;
-                score.detail += detail * importanceValue;
-                score.skin += r / 255f * (detail + mSkinBias) * importanceValue;
-                score.saturation += b / 255f * (detail + mSaturationBias) * importanceValue;
+                cropScore.detail += detail * importanceValue;
+                cropScore.skin += r / 255f * (detail + mSkinBias) * importanceValue;
+                cropScore.saturation += b / 255f * (detail + mSaturationBias) * importanceValue;
                 p++;
             }
         }
-        score.total = (score.detail * mDetailWeight + score.skin * mSkinWeight + score.saturation * mSaturationWeight) / (crop.width * crop.height);
-        return score;
+        cropScore.total = (cropScore.detail * mDetailWeight + cropScore.skin * mSkinWeight + cropScore.saturation * mSaturationWeight) / (crop.width * crop.height);
+        return cropScore;
     }
 
     private float importance(CropRegion crop, int x, int y) {
