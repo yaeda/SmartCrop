@@ -31,7 +31,7 @@ public class CropTest extends InstrumentationTestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        smartcrop = new SmartCrop();
+        smartcrop = new SmartCrop.Builder().build();
     }
 
     public void tearDown() throws Exception {
