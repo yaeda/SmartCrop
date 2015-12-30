@@ -21,7 +21,7 @@ public class OptionTest extends InstrumentationTestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        smartcrop = new SmartCrop();
+        smartcrop = new SmartCrop.Builder().build();
         TestSet testSet = AssetUtil.loadTestSet(getResources(), "test_monkey.json");
         bitmap = AssetUtil.loadTestBitmap(getResources(), testSet.filename);
     }

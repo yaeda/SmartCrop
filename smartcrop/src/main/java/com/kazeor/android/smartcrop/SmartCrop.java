@@ -71,7 +71,33 @@ public class SmartCrop {
         float total = 0f;
     }
 
-    public SmartCrop() {}
+    static class Builder {
+
+        private float mMinScale = 0.9f;
+        private boolean mDebug = false;
+
+        Builder() {}
+
+        Builder setMinScale(float minScale) {
+            this.mMinScale = minScale;
+            return this;
+        }
+
+        Builder setDebugFlag(boolean debug) {
+            this.mDebug = debug;
+            return this;
+        }
+
+        SmartCrop build() {
+            return new SmartCrop(this);
+        }
+
+    }
+
+    private SmartCrop(Builder builder) {
+        mMinScale = builder.mMinScale;
+        mDebug = builder.mDebug;
+    }
 
     public CropResult crop(Bitmap image, float aspect) {
         mAspect = aspect;
