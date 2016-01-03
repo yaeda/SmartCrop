@@ -49,8 +49,9 @@ public class SmartCrop {
     private boolean mDebug = false;
 
     public class CropResult {
-        public CropRegion topCrop;
-        public SparseArray<CropRegion> crops;
+        public CropRegion topCrop = null;
+        public SparseArray<CropRegion> crops = null;
+        public Bitmap debugBitmap = null
     }
 
     public class CropRegion {
@@ -183,31 +184,9 @@ public class SmartCrop {
                     outputBuffer[p++] = Color.argb(a, r, g, b);
                 }
             }
-            Bitmap debugImage = Bitmap.createBitmap(outputBuffer, 0, width, width, height, Bitmap.Config.ARGB_8888);
-            saveBitmap(debugImage, "debug.png");
-            debugImage.recycle();
+            cropResult.debugBitmap = Bitmap.createBitmap(outputBuffer, 0, width, width, height, Bitmap.Config.ARGB_8888);
         }
         return cropResult;
-    }
-
-    private void saveBitmap(Bitmap bitmap, String filename) {
-        String path = Environment.getExternalStorageDirectory().toString();
-        File file = new File(path, filename); // the File to save to
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void skinDetect(int width, int height, int[] input, int[] output) {
