@@ -2,13 +2,7 @@ package com.kazeor.android.smartcrop;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.os.Environment;
 import android.util.SparseArray;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class SmartCrop {
     private static final String TAG = "SmartCrop";
@@ -51,7 +45,7 @@ public class SmartCrop {
     public class CropResult {
         public CropRegion topCrop = null;
         public SparseArray<CropRegion> crops = null;
-        public Bitmap debugBitmap = null
+        public Bitmap debugBitmap = null;
     }
 
     public class CropRegion {
