@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">SmartCrop</string>
-    <string name="pick">Pick a photo</string>
+    <string name="action_add">Pick Photos</string>
 </resources>
