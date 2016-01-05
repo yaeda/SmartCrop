@@ -31,11 +31,15 @@ public class MainActivity extends AppCompatActivity {
     @SuppressWarnings("unused")
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE_FILE_SELECTION = 1;
+    private ListView mListView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mListView = (ListView) findViewById(R.id.list);
+        mListView.setAdapter(new CropInfoAdapter(getApplicationContext(), new ArrayList<CropInfo>()));
     }
 
     @Override
@@ -121,9 +125,9 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(new Action1<List<CropInfo>>() {
                     @Override
                     public void call(List<CropInfo> results) {
-                        ArrayList<CropInfo> array = new ArrayList<>(results);
-                        ListView list = (ListView) findViewById(R.id.list);
-                        list.setAdapter(new CropInfoAdapter(getApplicationContext(), array));
+                        if (mListView != null) {
+                            ((CropInfoAdapter) mListView.getAdapter()).addAll(results);
+                        }
                     }
                 });
 
