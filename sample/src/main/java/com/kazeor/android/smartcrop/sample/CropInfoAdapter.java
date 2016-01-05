@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.kazeor.android.smartcrop.sample.view.ResultView;
+
 import java.util.ArrayList;
 
 public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
@@ -23,7 +25,7 @@ public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
             holder = new Holder();
-            holder.imageLeft = (ImageView) convertView.findViewById(R.id.imageLeft);
+            holder.imageLeft = (ResultView) convertView.findViewById(R.id.imageLeft);
             holder.imageRight = (ImageView) convertView.findViewById(R.id.imageRight);
             convertView.setTag(holder);
         } else {
@@ -36,12 +38,13 @@ public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
                 cropInfo.mediaId, MediaStore.Images.Thumbnails.MINI_KIND, null);
 
         holder.imageLeft.setImageBitmap(thumb);
+        holder.imageLeft.setCropResult(cropInfo.cropResult);
         holder.imageRight.setImageBitmap(cropInfo.cropResult.debugBitmap);
         return convertView;
     }
 
     class Holder {
-        ImageView imageLeft;
+        ResultView imageLeft;
         ImageView imageRight;
     }
 

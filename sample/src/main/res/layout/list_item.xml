@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
 
-        <ImageView
+        <com.kazeor.android.smartcrop.sample.view.ResultView
             android:id="@+id/imageLeft"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
