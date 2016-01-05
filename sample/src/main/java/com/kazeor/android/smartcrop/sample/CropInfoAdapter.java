@@ -32,7 +32,7 @@ public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
             holder = (Holder) convertView.getTag();
         }
 
-        CropInfo cropInfo = getItem(position);
+        CropInfo cropInfo = getItem(getCount() - 1 - position);
         Bitmap thumb = MediaStore.Images.Thumbnails.getThumbnail(
                 getContext().getContentResolver(),
                 cropInfo.mediaId, MediaStore.Images.Thumbnails.MINI_KIND, null);
