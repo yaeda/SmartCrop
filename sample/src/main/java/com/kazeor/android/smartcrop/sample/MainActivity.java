@@ -31,7 +31,9 @@ public class MainActivity extends AppCompatActivity {
     @SuppressWarnings("unused")
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE_FILE_SELECTION = 1;
+
     private ListView mListView = null;
+    private MenuItem mCropMenu = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+        mCropMenu = menu.findItem(R.id.action_select_aspect);
         return true;
     }
 
@@ -53,6 +56,16 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_add:
                 requestFileSelection();
+                return true;
+            case R.id.label_crop_square:
+                updateAspect(CropInfo.CROP_ASPECT.SQUARE);
+                return true;
+            case R.id.label_crop_landscape:
+                updateAspect(CropInfo.CROP_ASPECT.LANDSCAPE);
+                return true;
+            case R.id.label_crop_portrait:
+                updateAspect(CropInfo.CROP_ASPECT.PORTRAIT);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -65,6 +78,30 @@ public class MainActivity extends AppCompatActivity {
                 crop(data);
             }
         }
+    }
+
+    private void updateAspect(CropInfo.CROP_ASPECT aspect) {
+        if (mCropMenu == null || mListView == null) {
+            return;
+        }
+
+        int iconId;
+        switch (aspect) {
+            default:
+            case SQUARE:
+                iconId = R.drawable.ic_crop_square_light;
+                break;
+            case LANDSCAPE:
+                iconId = R.drawable.ic_crop_landscape_light;
+                break;
+            case PORTRAIT:
+                iconId = R.drawable.ic_crop_portrait_light;
+                break;
+        }
+
+        mCropMenu.setIcon(iconId);
+        ((CropInfoAdapter) mListView.getAdapter()).setCropAspect(aspect);
+        mListView.invalidateViews();
     }
 
     private void requestFileSelection() {
@@ -106,17 +143,23 @@ public class MainActivity extends AppCompatActivity {
                                 BitmapUtils.SIZE_VGA);
 
                         // crop
-                        SmartCrop.CropResult cropResult = null;
+                        SmartCrop.CropResult cropResult1by1 = null;
+                        SmartCrop.CropResult cropResult16by9 = null;
+                        SmartCrop.CropResult cropResult9by16 = null;
                         if (bitmap != null) {
                             SmartCrop smartcrop = new SmartCrop.Builder()
                                     .setDebugFlag(true)
                                     .build();
-                            cropResult = smartcrop.crop(bitmap, 1);
+                            cropResult1by1 = smartcrop.crop(bitmap, 1);
+                            cropResult16by9 = smartcrop.crop(bitmap, 16f / 9f);
+                            cropResult9by16 = smartcrop.crop(bitmap, 9f / 16f);
                         }
 
                         CropInfo cropInfo = new CropInfo();
                         cropInfo.mediaId = Long.parseLong(id);
-                        cropInfo.cropResult = cropResult;
+                        cropInfo.cropResultSquare = cropResult1by1;
+                        cropInfo.cropResultLandscape = cropResult16by9;
+                        cropInfo.cropResultPortrait = cropResult9by16;
                         return cropInfo;
                     }
                 })

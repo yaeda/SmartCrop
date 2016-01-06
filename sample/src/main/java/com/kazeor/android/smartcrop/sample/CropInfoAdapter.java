@@ -9,14 +9,21 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.kazeor.android.smartcrop.SmartCrop;
 import com.kazeor.android.smartcrop.sample.view.ResultView;
 
 import java.util.ArrayList;
 
 public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
 
+    private CropInfo.CROP_ASPECT mAspect = CropInfo.CROP_ASPECT.SQUARE;
+
     public CropInfoAdapter(Context context, ArrayList<CropInfo> infoList) {
         super(context, 0, infoList);
+    }
+
+    public void setCropAspect(CropInfo.CROP_ASPECT aspect) {
+        mAspect = aspect;
     }
 
     @Override
@@ -37,9 +44,27 @@ public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
                 getContext().getContentResolver(),
                 cropInfo.mediaId, MediaStore.Images.Thumbnails.MINI_KIND, null);
 
+        SmartCrop.CropResult cropResult;
+        Bitmap debugBitmap;
+        switch (mAspect) {
+            default:
+            case SQUARE:
+                cropResult = cropInfo.cropResultSquare;
+                debugBitmap = cropInfo.cropResultSquare.debugBitmap;
+                break;
+            case LANDSCAPE:
+                cropResult = cropInfo.cropResultLandscape;
+                debugBitmap = cropInfo.cropResultLandscape.debugBitmap;
+                break;
+            case PORTRAIT:
+                cropResult = cropInfo.cropResultPortrait;
+                debugBitmap = cropInfo.cropResultPortrait.debugBitmap;
+                break;
+        }
+
         holder.imageLeft.setImageBitmap(thumb);
-        holder.imageLeft.setCropResult(cropInfo.cropResult);
-        holder.imageRight.setImageBitmap(cropInfo.cropResult.debugBitmap);
+        holder.imageLeft.setCropResult(cropResult);
+        holder.imageRight.setImageBitmap(debugBitmap);
         return convertView;
     }
 
