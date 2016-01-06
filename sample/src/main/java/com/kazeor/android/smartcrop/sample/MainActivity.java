@@ -1,6 +1,7 @@
 package com.kazeor.android.smartcrop.sample;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -114,6 +115,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void crop(final Intent data) {
+        final ProgressDialog progressDialog = ProgressDialog
+                .show(MainActivity.this, null, getString(R.string.message_crop_progress));
+
         Observable
                 .create(new Observable.OnSubscribe<Uri>() {
                     @Override
@@ -171,6 +175,7 @@ public class MainActivity extends AppCompatActivity {
                         if (mListView != null) {
                             ((CropInfoAdapter) mListView.getAdapter()).addAll(results);
                         }
+                        progressDialog.dismiss();
                     }
                 });
 
