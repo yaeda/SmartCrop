@@ -45,26 +45,26 @@ public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
                 cropInfo.mediaId, MediaStore.Images.Thumbnails.MINI_KIND, null);
 
         SmartCrop.CropResult cropResult;
-        Bitmap debugBitmap;
+        Bitmap scoreBitmap;
         switch (mAspect) {
             default:
             case SQUARE:
                 cropResult = cropInfo.cropResultSquare;
-                debugBitmap = cropInfo.cropResultSquare.debugBitmap;
+                scoreBitmap = cropInfo.cropResultSquare.scoreMap;
                 break;
             case LANDSCAPE:
                 cropResult = cropInfo.cropResultLandscape;
-                debugBitmap = cropInfo.cropResultLandscape.debugBitmap;
+                scoreBitmap = cropInfo.cropResultLandscape.scoreMap;
                 break;
             case PORTRAIT:
                 cropResult = cropInfo.cropResultPortrait;
-                debugBitmap = cropInfo.cropResultPortrait.debugBitmap;
+                scoreBitmap = cropInfo.cropResultPortrait.scoreMap;
                 break;
         }
 
         holder.imageLeft.setImageBitmap(thumb);
         holder.imageLeft.setCropResult(cropResult);
-        holder.imageRight.setImageBitmap(debugBitmap);
+        holder.imageRight.setImageBitmap(scoreBitmap);
         return convertView;
     }
 

@@ -40,12 +40,12 @@ public class SmartCrop {
     private boolean mRuleOfThirds = true;
     //private boolean mPrescale = true;
 
-    private boolean mDebug = false;
+    private boolean mShouldOutputScoreMap = false;
 
     public class CropResult {
         public CropRegion topCrop = null;
         public SparseArray<CropRegion> crops = null;
-        public Bitmap debugBitmap = null;
+        public Bitmap scoreMap = null;
     }
 
     public class CropRegion {
@@ -69,7 +69,7 @@ public class SmartCrop {
     static public class Builder {
 
         private float mMinScale = 0.9f;
-        private boolean mDebug = false;
+        private boolean mShouldOutputScoreMap = false;
 
         public Builder() {}
 
@@ -78,8 +78,8 @@ public class SmartCrop {
             return this;
         }
 
-        public Builder setDebugFlag(boolean debug) {
-            this.mDebug = debug;
+        public Builder shouldOutputScoreMap() {
+            mShouldOutputScoreMap = true;
             return this;
         }
 
@@ -91,7 +91,7 @@ public class SmartCrop {
 
     private SmartCrop(Builder builder) {
         mMinScale = builder.mMinScale;
-        mDebug = builder.mDebug;
+        mShouldOutputScoreMap = builder.mShouldOutputScoreMap;
     }
 
     public CropResult crop(Bitmap image, float aspect) {
@@ -158,32 +158,14 @@ public class SmartCrop {
         cropResult.topCrop = topCrop;
         cropResult.crops = crops;
 
-        if (mDebug && topCrop != null) {
-            for (int y = 0; y < height; y++) {
-                int p = width * y;
-                for (int x = 0; x < width; x++) {
-                    int outColor = outputBuffer[p];
-                    int a = 255;
-                    int r = Color.red(outColor);
-                    int g = Color.green(outColor);
-                    int b = Color.blue(outColor);
-                    float importanceValue = this.importance(topCrop, x, y);
-
-                    if (importanceValue > 0) {
-                        g += importanceValue * 32;
-                    }
-                    if (importanceValue < 0) {
-                        r -= importanceValue * 64;
-                    }
-
-                    if (r < 0) r = 0;
-                    if (r > 255) r = 255;
-                    if (g < 0) g = 0;
-                    if (g > 255) g = 255;
-                    outputBuffer[p++] = Color.argb(a, r, g, b);
-                }
-            }
-            cropResult.debugBitmap = Bitmap.createBitmap(outputBuffer, 0, width, width, height, Bitmap.Config.ARGB_8888);
+        if (mShouldOutputScoreMap) {
+            cropResult.scoreMap = Bitmap.createBitmap(
+                    outputBuffer,
+                    0,
+                    width,
+                    width,
+                    height,
+                    Bitmap.Config.ARGB_8888);
         }
         return cropResult;
     }

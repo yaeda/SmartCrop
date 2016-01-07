@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                         SmartCrop.CropResult cropResult9by16 = null;
                         if (bitmap != null) {
                             SmartCrop smartcrop = new SmartCrop.Builder()
-                                    .setDebugFlag(true)
+                                    .shouldOutputScoreMap()
                                     .build();
                             cropResult1by1 = smartcrop.crop(bitmap, 1);
                             cropResult16by9 = smartcrop.crop(bitmap, 16f / 9f);
