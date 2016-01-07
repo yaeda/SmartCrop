@@ -66,24 +66,24 @@ public class SmartCrop {
         float total = 0f;
     }
 
-    static class Builder {
+    static public class Builder {
 
         private float mMinScale = 0.9f;
         private boolean mDebug = false;
 
-        Builder() {}
+        public Builder() {}
 
-        Builder setMinScale(float minScale) {
+        public Builder setMinScale(float minScale) {
             this.mMinScale = minScale;
             return this;
         }
 
-        Builder setDebugFlag(boolean debug) {
+        public Builder setDebugFlag(boolean debug) {
             this.mDebug = debug;
             return this;
         }
 
-        SmartCrop build() {
+        public SmartCrop build() {
             return new SmartCrop(this);
         }
 
@@ -164,6 +164,7 @@ public class SmartCrop {
                     int g = Color.green(outColor);
                     int b = Color.blue(outColor);
                     float importanceValue = this.importance(topCrop, x, y);
+
                     if (importanceValue > 0) {
                         g += importanceValue * 32;
                     }

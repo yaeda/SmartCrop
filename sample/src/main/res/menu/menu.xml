@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_select_aspect"
+        android:title="@string/action_select_aspect"
+        android:icon="@drawable/ic_crop_square_light"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/label_crop_square"
+                android:title="@string/label_crop_square"
+                android:icon="@drawable/ic_crop_square_dark"/>
+            <item
+                android:id="@+id/label_crop_landscape"
+                android:title="@string/label_crop_landscape"
+                android:icon="@drawable/ic_crop_landscape_dark"/>
+            <item
+                android:id="@+id/label_crop_portrait"
+                android:title="@string/label_crop_portrait"
+                android:icon="@drawable/ic_crop_portrait_dark"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/action_add"
+        android:title="@string/action_add"
+        android:icon="@drawable/ic_add_light"
+        app:showAsAction="always" />
+</menu>

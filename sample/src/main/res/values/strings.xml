@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">SmartCrop</string>
-    <string name="pick">Pick a photo</string>
+    <string name="action_add">Pick Photos</string>
+    <string name="action_select_aspect">Select Aspect</string>
+    <string name="label_crop_square">Square</string>
+    <string name="label_crop_portrait">Portrait</string>
+    <string name="label_crop_landscape">Landscape</string>
+    <string name="message_crop_progress">Now Cropping...</string>
 </resources>
