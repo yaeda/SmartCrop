@@ -100,11 +100,15 @@ public class SmartCrop {
         CropResult cropResult = analyze(image);
 
         // alignment for our usage
-        if (cropResult.topCrop != null) {
-            cropResult.topCrop.x /= image.getWidth();
-            cropResult.topCrop.y /= image.getHeight();
-            cropResult.topCrop.width /= image.getWidth();
-            cropResult.topCrop.height /= image.getHeight();
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int numCrops = cropResult.crops.size();
+        for (int i = 0; i < numCrops; i++) {
+            CropRegion cropRegion = cropResult.crops.valueAt(i);
+            cropRegion.x /= width;
+            cropRegion.y /= height;
+            cropRegion.width /= width;
+            cropRegion.height /= height;
         }
 
         return cropResult;
