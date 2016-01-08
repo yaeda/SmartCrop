@@ -3,6 +3,7 @@ package com.kazeor.android.smartcrop.sample;
 import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 
 import java.io.FileNotFoundException;
@@ -101,4 +102,10 @@ public class BitmapUtils {
         return scaledBitmap;
     }
 
+    public static Bitmap rotateBitmap(Bitmap bitmap, int degree) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        return Bitmap.createBitmap(
+                bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+    }
 }

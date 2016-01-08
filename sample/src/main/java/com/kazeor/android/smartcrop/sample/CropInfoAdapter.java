@@ -9,12 +9,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.kazeor.android.smartcrop.Frame;
 import com.kazeor.android.smartcrop.SmartCrop;
 import com.kazeor.android.smartcrop.sample.view.ResultView;
 
 import java.util.ArrayList;
 
 public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
+
+
 
     private CropInfo.CROP_ASPECT mAspect = CropInfo.CROP_ASPECT.SQUARE;
 
@@ -62,9 +65,19 @@ public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
                 break;
         }
 
-        holder.imageLeft.setImageBitmap(thumb);
+        if (cropInfo.orientation == Frame.Orientation.DEGREE_0) {
+            holder.imageLeft.setImageBitmap(thumb);
+            holder.imageRight.setImageBitmap(scoreBitmap);
+        } else {
+            holder.imageLeft.setImageBitmap(
+                    BitmapUtils.rotateBitmap(thumb, cropInfo.orientation.getDegree())
+            );
+            thumb.recycle();
+            holder.imageRight.setImageBitmap(
+                    BitmapUtils.rotateBitmap(scoreBitmap, cropInfo.orientation.getDegree())
+            );
+        }
         holder.imageLeft.setCropResult(cropResult);
-        holder.imageRight.setImageBitmap(scoreBitmap);
         return convertView;
     }
 
