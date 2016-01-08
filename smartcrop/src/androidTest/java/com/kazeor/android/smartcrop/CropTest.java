@@ -22,7 +22,8 @@ public class CropTest extends InstrumentationTestCase {
         TestSet testSet = AssetUtil.loadTestSet(getResources(), testAssetFile);
         Bitmap bitmap = AssetUtil.loadTestBitmap(getResources(), testSet.filename);
 
-        SmartCrop.CropResult cropResult = smartcrop.crop(bitmap, 1);
+        Frame frame  = new Frame.Builder().setBitmap(bitmap).build();
+        SmartCrop.CropResult cropResult = smartcrop.crop(frame, 1);
 
         assertTrue(testSet.region.isInsideOf(cropResult.topCrop));
 
@@ -54,7 +55,8 @@ public class CropTest extends InstrumentationTestCase {
         }
 
         Bitmap bitmap = Bitmap.createBitmap(colors, width, height, Bitmap.Config.ARGB_8888);
-        SmartCrop.CropResult cropResult = smartcrop.crop(bitmap, 1);
+        Frame frame  = new Frame.Builder().setBitmap(bitmap).build();
+        SmartCrop.CropResult cropResult = smartcrop.crop(frame, 1);
 
         assertTrue(cropResult.topCrop.x <= 96f / width);
         assertTrue(cropResult.topCrop.y <= 32f / height);
