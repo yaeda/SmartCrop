@@ -94,9 +94,14 @@ public class SmartCrop {
         mShouldOutputScoreMap = builder.mShouldOutputScoreMap;
     }
 
-    public CropResult crop(Bitmap image, float aspect) {
-        mAspect = aspect;
+    public CropResult crop(Frame frame, float aspect) {
+        if (frame.getOrientation().getDegree() % 180 == 0) {
+            mAspect = aspect;
+        } else {
+            mAspect = 1 / aspect;
+        }
 
+        Bitmap image = frame.getBitmap();
         CropResult cropResult = analyze(image);
 
         // alignment for our usage
@@ -109,9 +114,38 @@ public class SmartCrop {
             cropRegion.y /= height;
             cropRegion.width /= width;
             cropRegion.height /= height;
+            rotateRegion(cropRegion, frame.getOrientation());
         }
 
         return cropResult;
+    }
+
+    private void rotateRegion(CropRegion cropRegion, Frame.Orientation orientation) {
+        float fx = cropRegion.x;
+        float fy = cropRegion.y;
+        float fw = cropRegion.width;
+        float fh = cropRegion.height;
+        switch (orientation) {
+            default:
+            case DEGREE_0:
+                break;
+            case DEGREE_90:
+                cropRegion.x = 1f - fy - fh;
+                cropRegion.y = fx;
+                cropRegion.width = fh;
+                cropRegion.height = fw;
+                break;
+            case DEGREE_180:
+                cropRegion.x = 1f - fx - fw;
+                cropRegion.y = 1f - fy - fh;
+                break;
+            case DEGREE_270:
+                cropRegion.x = fy;
+                cropRegion.y = 1f - fx - fw;
+                cropRegion.width = fh;
+                cropRegion.height = fw;
+                break;
+        }
     }
 
     private CropResult analyze(Bitmap image) {

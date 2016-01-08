@@ -9,7 +9,7 @@ public class OptionTest extends InstrumentationTestCase {
 
     final float ASSERT_FLOAT_DELTA = 0.00001f;
     SmartCrop smartcrop = null;
-    Bitmap bitmap = null;
+    Frame frame = null;
 
     private Context getApplicationContext() {
         return getInstrumentation().getTargetContext().getApplicationContext();
@@ -23,17 +23,19 @@ public class OptionTest extends InstrumentationTestCase {
         super.setUp();
         smartcrop = new SmartCrop.Builder().build();
         TestSet testSet = AssetUtil.loadTestSet(getResources(), "test_monkey.json");
-        bitmap = AssetUtil.loadTestBitmap(getResources(), testSet.filename);
+        Bitmap bitmap = AssetUtil.loadTestBitmap(getResources(), testSet.filename);
+        frame = new Frame.Builder().setBitmap(bitmap).build();
     }
 
     public void tearDown() throws Exception {
-        bitmap.recycle();
+        frame.getBitmap().recycle();
     }
 
     // crop should be something sane
     public void testAspectOption1by1() throws Exception {
-        SmartCrop.CropResult cropResult = smartcrop.crop(bitmap, 1);
+        SmartCrop.CropResult cropResult = smartcrop.crop(frame, 1);
 
+        Bitmap bitmap = frame.getBitmap();
         assertEquals(
                 bitmap.getWidth() * cropResult.topCrop.width,
                 bitmap.getHeight() * cropResult.topCrop.height
@@ -42,8 +44,9 @@ public class OptionTest extends InstrumentationTestCase {
 
     public void testAspectOption16by9() throws Exception {
         float aspect = 16f / 9f;
-        SmartCrop.CropResult cropResult = smartcrop.crop(bitmap, aspect);
+        SmartCrop.CropResult cropResult = smartcrop.crop(frame, aspect);
 
+        Bitmap bitmap = frame.getBitmap();
         assertEquals(
                 aspect,
                 (bitmap.getWidth() * cropResult.topCrop.width) / (bitmap.getHeight() * cropResult.topCrop.height),
@@ -53,8 +56,9 @@ public class OptionTest extends InstrumentationTestCase {
 
     public void testAspectOption9by16() throws Exception {
         float aspect = 9f / 16f;
-        SmartCrop.CropResult cropResult = smartcrop.crop(bitmap, aspect);
+        SmartCrop.CropResult cropResult = smartcrop.crop(frame, aspect);
 
+        Bitmap bitmap = frame.getBitmap();
         assertEquals(
                 aspect,
                 (bitmap.getWidth() * cropResult.topCrop.width) / (bitmap.getHeight() * cropResult.topCrop.height),

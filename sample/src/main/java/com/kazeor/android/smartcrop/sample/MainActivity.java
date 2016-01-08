@@ -3,8 +3,10 @@ package com.kazeor.android.smartcrop.sample;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ClipData;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.DocumentsContract;
@@ -15,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import com.kazeor.android.smartcrop.Frame;
 import com.kazeor.android.smartcrop.SmartCrop;
 
 import java.util.ArrayList;
@@ -141,9 +144,33 @@ public class MainActivity extends AppCompatActivity {
                         String id = DocumentsContract.getDocumentId(documentUri).split(":")[1];
                         Uri uri = ContentUris.withAppendedId(
                                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, Long.parseLong(id));
+                        ContentResolver contentResolver = getContentResolver();
+
+                        // Orientation
+                        Frame.Orientation orientation = Frame.Orientation.DEGREE_0;
+                        String[] projection = {MediaStore.Images.Media.ORIENTATION};
+                        Cursor cursor = contentResolver.query(uri, projection, null, null, null);
+                        if (cursor.moveToFirst()) {
+                            int index = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION);
+                            switch (cursor.getInt(index)) {
+                                default:
+                                case 0:
+                                    break;
+                                case 90:
+                                    orientation = Frame.Orientation.DEGREE_90;
+                                    break;
+                                case 180:
+                                    orientation = Frame.Orientation.DEGREE_180;
+                                    break;
+                                case 270:
+                                    orientation = Frame.Orientation.DEGREE_270;
+                                    break;
+                            }
+                        }
+                        cursor.close();
 
                         // load bitmap
-                        Bitmap bitmap = BitmapUtils.createScaledBitmap(getContentResolver(), uri,
+                        Bitmap bitmap = BitmapUtils.createScaledBitmap(contentResolver, uri,
                                 BitmapUtils.SIZE_VGA);
 
                         // crop
@@ -154,13 +181,18 @@ public class MainActivity extends AppCompatActivity {
                             SmartCrop smartcrop = new SmartCrop.Builder()
                                     .shouldOutputScoreMap()
                                     .build();
-                            cropResult1by1 = smartcrop.crop(bitmap, 1);
-                            cropResult16by9 = smartcrop.crop(bitmap, 16f / 9f);
-                            cropResult9by16 = smartcrop.crop(bitmap, 9f / 16f);
+                            Frame frame = new Frame.Builder()
+                                    .setBitmap(bitmap)
+                                    .setOrientation(orientation)
+                                    .build();
+                            cropResult1by1 = smartcrop.crop(frame, 1);
+                            cropResult16by9 = smartcrop.crop(frame, 16f / 9f);
+                            cropResult9by16 = smartcrop.crop(frame, 9f / 16f);
                         }
 
                         CropInfo cropInfo = new CropInfo();
                         cropInfo.mediaId = Long.parseLong(id);
+                        cropInfo.orientation = orientation;
                         cropInfo.cropResultSquare = cropResult1by1;
                         cropInfo.cropResultLandscape = cropResult16by9;
                         cropInfo.cropResultPortrait = cropResult9by16;
