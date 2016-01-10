@@ -2,12 +2,11 @@ package com.kazeor.android.smartcrop;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.RectF;
 import android.util.SparseArray;
 
 public class SmartCrop {
     private static final String TAG = "SmartCrop";
-
-    private float mAspect = 1f;
 
     // detail
     private float mDetailWeight = 0.2f;
@@ -54,8 +53,8 @@ public class SmartCrop {
         public float width;
         public float height;
         public CropScore score = null;
-        public CropRegion(float x, float y, float width, float height) {
-            this.x = x; this.y = y; this.width = width; this.height = height;
+        public CropRegion(float x, float y, float width, float height, CropScore score) {
+            this.x = x; this.y = y; this.width = width; this.height = height; this.score = score;
         }
     }
 
@@ -95,19 +94,52 @@ public class SmartCrop {
     }
 
     public CropResult crop(Frame frame, float aspect) {
-        if (frame.getOrientation().getDegree() % 180 == 0) {
-            mAspect = aspect;
-        } else {
-            mAspect = 1 / aspect;
+        float rotatedAspect = aspect;
+        if (frame.getOrientation().getDegree() % 180 != 0) {
+            rotatedAspect = 1 / aspect;
         }
 
         Bitmap image = frame.getBitmap();
-        CropResult cropResult = analyze(image);
-
-        // alignment for our usage
         int width = image.getWidth();
         int height = image.getHeight();
-        int numCrops = cropResult.crops.size();
+
+        Bitmap scoreMapBitmap = createScoreMap(image);
+        SparseArray<RectF> cropRects = createCropRects(width, height, rotatedAspect);
+        SparseArray<CropRegion> cropRegions = createCropRegions(cropRects, scoreMapBitmap);
+
+
+        float topScore = -Float.MAX_VALUE;
+        CropRegion topCrop = null;
+        int numCrops = cropRegions.size();
+        for (int i = 0; i < numCrops; i++) {
+            CropRegion cropRegion = cropRegions.valueAt(i);
+            if (cropRegion.score.total > topScore) {
+                topCrop = cropRegion;
+                topScore = cropRegion.score.total;
+            }
+        }
+
+        // result
+        CropResult cropResult = new CropResult();
+        cropResult.topCrop = topCrop;
+        cropResult.crops = cropRegions;
+
+        if (mShouldOutputScoreMap) {
+            cropResult.scoreMap = scoreMapBitmap;
+            /*
+            cropResult.scoreMap = Bitmap.createBitmap(
+                    outputBuffer,
+                    0,
+                    width,
+                    width,
+                    height,
+                    Bitmap.Config.ARGB_8888);
+            */
+        } else {
+            scoreMapBitmap.recycle();
+        }
+
+        // alignment for our usage
         for (int i = 0; i < numCrops; i++) {
             CropRegion cropRegion = cropResult.crops.valueAt(i);
             cropRegion.x /= width;
@@ -148,7 +180,7 @@ public class SmartCrop {
         }
     }
 
-    private CropResult analyze(Bitmap image) {
+    private Bitmap createScoreMap(Bitmap image) {
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -166,42 +198,30 @@ public class SmartCrop {
         int scaledWidth = (int)Math.ceil((double)width / mScoreDownSample);
         int scaledHeight = (int)Math.ceil((double)height / mScoreDownSample);
         Bitmap scoreImage = Bitmap.createScaledBitmap(outputImage, scaledWidth, scaledHeight, false);
-        int[] scoreBuffer = new int[scaledWidth * scaledHeight];
-        scoreImage.getPixels(scoreBuffer, 0, scaledWidth, 0, 0, scaledWidth, scaledHeight);
-
-        float topScore = -Float.MAX_VALUE;
-        CropRegion topCrop = null;
-        SparseArray<CropRegion> crops = crops(width, height);
-
-        int numCrops = crops.size();
-        for (int i = 0; i < numCrops; i++) {
-            CropRegion crop = crops.valueAt(i);
-            crop.score = score(scaledWidth, scaledHeight, scoreBuffer, crop);
-            if (crop.score.total > topScore) {
-                topCrop = crop;
-                topScore = crop.score.total;
-            }
-        }
 
         // release buffer
         outputImage.recycle();
-        scoreImage.recycle();
 
-        // result
-        CropResult cropResult = new CropResult();
-        cropResult.topCrop = topCrop;
-        cropResult.crops = crops;
+        return scoreImage;
+    }
 
-        if (mShouldOutputScoreMap) {
-            cropResult.scoreMap = Bitmap.createBitmap(
-                    outputBuffer,
-                    0,
-                    width,
-                    width,
-                    height,
-                    Bitmap.Config.ARGB_8888);
+    private SparseArray<CropRegion> createCropRegions(SparseArray<RectF> cropRects, Bitmap scoreMap) {
+        int scoreMapWidth = scoreMap.getWidth();
+        int scoreMapHeight = scoreMap.getHeight();
+        int[] scoreBuffer = new int[scoreMapWidth * scoreMapHeight];
+        scoreMap.getPixels(scoreBuffer, 0, scoreMapWidth, 0, 0, scoreMapWidth, scoreMapHeight);
+
+        SparseArray<CropRegion> cropRegions = new SparseArray<>();
+        int numRects = cropRects.size();
+        for (int i = 0; i < numRects; i++) {
+            RectF rect = cropRects.valueAt(i);
+            CropScore score = calcScore(scoreMapWidth, scoreMapHeight, scoreBuffer, rect);
+            CropRegion region = new CropRegion(
+                    rect.left, rect.top, rect.width(), rect.height(), score);
+            cropRegions.append(i, region);
         }
-        return cropResult;
+
+        return cropRegions;
     }
 
     private void skinDetect(int width, int height, int[] input, int[] output) {
@@ -294,18 +314,18 @@ public class SmartCrop {
         }
     }
 
-    private SparseArray<CropRegion> crops(int width, int height) {
+    private SparseArray<RectF> createCropRects(int width, int height, float aspect) {
         float imageAspect = (float)width / (float)height;
-        float cropWidth = mAspect <= imageAspect ? height * mAspect : width;
-        float cropHeight = mAspect <= imageAspect ? height : width / mAspect;
+        float cropWidth = aspect <= imageAspect ? height * aspect : width;
+        float cropHeight = aspect <= imageAspect ? height : width / aspect;
 
-        SparseArray<CropRegion> crops = new SparseArray<>();
+        SparseArray<RectF> crops = new SparseArray<>();
         int key = 0;
         for (float scale = mMaxScale; scale >= mMinScale; scale -= mScaleStep) {
             for (float y = 0f; y + cropHeight * scale <= height; y += mStep) {
                 for (float x = 0f; x + cropWidth * scale <= width; x += mStep){
                     crops.append(key++,
-                            new CropRegion(x, y, cropWidth * scale, cropHeight * scale));
+                            new RectF(x, y, x + cropWidth * scale, y + cropHeight * scale));
                 }
             }
         }
@@ -313,7 +333,7 @@ public class SmartCrop {
         return crops;
     }
 
-    private CropScore score(int width, int height, int[] scoreBuffer, CropRegion crop) {
+    private CropScore calcScore(int width, int height, int[] scoreBuffer, RectF crop) {
         CropScore cropScore = new CropScore();
         int downSample = mScoreDownSample;
 
@@ -332,20 +352,17 @@ public class SmartCrop {
                 p++;
             }
         }
-        cropScore.total = (cropScore.detail * mDetailWeight + cropScore.skin * mSkinWeight + cropScore.saturation * mSaturationWeight) / (crop.width * crop.height);
+        cropScore.total = (cropScore.detail * mDetailWeight + cropScore.skin * mSkinWeight + cropScore.saturation * mSaturationWeight) / (crop.width() * crop.height());
         return cropScore;
     }
 
-    private float importance(CropRegion crop, int x, int y) {
-        if (x < crop.x ||
-                x >= crop.x + crop.width ||
-                y < crop.y ||
-                y >= crop.y + crop.height) {
+    private float importance(RectF crop, int x, int y) {
+        if (x < crop.left || x >= crop.right || y < crop.top || y >= crop.bottom) {
             return mOutsideImportance;
         }
 
-        float sx = (x - crop.x) / crop.width;
-        float sy = (y - crop.y) / crop.height;
+        float sx = (x - crop.left) / crop.width();
+        float sy = (y - crop.top) / crop.height();
         float px = Math.abs(0.5f - sx) * 2;
         float py = Math.abs(0.5f - sy) * 2;
         // distance from edge
