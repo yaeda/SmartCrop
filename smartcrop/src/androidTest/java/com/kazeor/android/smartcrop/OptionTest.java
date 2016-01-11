@@ -8,7 +8,6 @@ import android.test.InstrumentationTestCase;
 public class OptionTest extends InstrumentationTestCase {
 
     final float ASSERT_FLOAT_DELTA = 0.00001f;
-    SmartCrop smartcrop = null;
     Frame frame = null;
 
     private Context getApplicationContext() {
@@ -21,7 +20,6 @@ public class OptionTest extends InstrumentationTestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        smartcrop = new SmartCrop.Builder().build();
         TestSet testSet = AssetUtil.loadTestSet(getResources(), "test_monkey.json");
         Bitmap bitmap = AssetUtil.loadTestBitmap(getResources(), testSet.filename);
         frame = new Frame.Builder().setBitmap(bitmap).build();
@@ -33,6 +31,7 @@ public class OptionTest extends InstrumentationTestCase {
 
     // crop should be something sane
     public void testAspectOption1by1() throws Exception {
+        SmartCrop smartcrop = new SmartCrop.Builder().build();
         CropResult cropResult = smartcrop.crop(frame, 1);
 
         Bitmap bitmap = frame.getBitmap();
@@ -44,6 +43,7 @@ public class OptionTest extends InstrumentationTestCase {
 
     public void testAspectOption16by9() throws Exception {
         float aspect = 16f / 9f;
+        SmartCrop smartcrop = new SmartCrop.Builder().build();
         CropResult cropResult = smartcrop.crop(frame, aspect);
 
         Bitmap bitmap = frame.getBitmap();
@@ -57,6 +57,7 @@ public class OptionTest extends InstrumentationTestCase {
 
     public void testAspectOption9by16() throws Exception {
         float aspect = 9f / 16f;
+        SmartCrop smartcrop = new SmartCrop.Builder().build();
         CropResult cropResult = smartcrop.crop(frame, aspect);
 
         Bitmap bitmap = frame.getBitmap();
@@ -68,4 +69,20 @@ public class OptionTest extends InstrumentationTestCase {
         );
     }
 
+    public void testOutputScoreMap_Disabled() throws Exception {
+        SmartCrop smartcrop = new SmartCrop.Builder()
+                .build();
+        CropResult cropResult = smartcrop.crop(frame, 1);
+
+        assertNull(cropResult.getScoreMap());
+    }
+
+    public void testOutputScoreMap_Enabled() throws Exception {
+        SmartCrop smartcrop = new SmartCrop.Builder()
+                .shouldOutputScoreMap()
+                .build();
+        CropResult cropResult = smartcrop.crop(frame, 1);
+
+        assertNotNull(cropResult.getScoreMap());
+    }
 }
