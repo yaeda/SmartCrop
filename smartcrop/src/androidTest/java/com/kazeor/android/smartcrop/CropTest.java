@@ -23,9 +23,9 @@ public class CropTest extends InstrumentationTestCase {
         Bitmap bitmap = AssetUtil.loadTestBitmap(getResources(), testSet.filename);
 
         Frame frame  = new Frame.Builder().setBitmap(bitmap).build();
-        SmartCrop.CropResult cropResult = smartcrop.crop(frame, 1);
+        CropResult cropResult = smartcrop.crop(frame, 1);
 
-        assertTrue(testSet.region.isInsideOf(cropResult.topCrop));
+        assertTrue(testSet.region.isInsideOf(cropResult.getTopCrop()));
 
         bitmap.recycle();
     }
@@ -56,12 +56,13 @@ public class CropTest extends InstrumentationTestCase {
 
         Bitmap bitmap = Bitmap.createBitmap(colors, width, height, Bitmap.Config.ARGB_8888);
         Frame frame  = new Frame.Builder().setBitmap(bitmap).build();
-        SmartCrop.CropResult cropResult = smartcrop.crop(frame, 1);
+        CropResult cropResult = smartcrop.crop(frame, 1);
+        CropRegion topCrop = cropResult.getTopCrop();
 
-        assertTrue(cropResult.topCrop.x <= 96f / width);
-        assertTrue(cropResult.topCrop.y <= 32f / height);
-        assertTrue(cropResult.topCrop.width >= 16f / width);
-        assertTrue(cropResult.topCrop.height >= 16f / height);
+        assertTrue(topCrop.getX() <= 96f / width);
+        assertTrue(topCrop.getY() <= 32f / height);
+        assertTrue(topCrop.getWidth() >= 16f / width);
+        assertTrue(topCrop.getHeight() >= 16f / height);
 
         // finalize
         bitmap.recycle();

@@ -7,11 +7,12 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import com.kazeor.android.smartcrop.SmartCrop;
+import com.kazeor.android.smartcrop.CropRegion;
+import com.kazeor.android.smartcrop.CropResult;
 
 public class ResultView extends ImageView {
 
-    private SmartCrop.CropResult mCropResult = null;
+    private CropResult mCropResult = null;
 
     private Paint mPaintRect;
 
@@ -32,7 +33,7 @@ public class ResultView extends ImageView {
         initGraphicsObjects();
     }
 
-    public void setCropResult(SmartCrop.CropResult cropResult) {
+    public void setCropResult(CropResult cropResult) {
         mCropResult = cropResult;
     }
 
@@ -40,9 +41,10 @@ public class ResultView extends ImageView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (mCropResult != null && mCropResult.topCrop != null) {
-            drawGrid(canvas, mCropResult.topCrop, mPaintGrid);
-            drawCropRegion(canvas, mCropResult.topCrop, mPaintRect);
+        if (mCropResult != null && mCropResult.getTopCrop() != null) {
+            CropRegion topCrop = mCropResult.getTopCrop();
+            drawGrid(canvas, topCrop, mPaintGrid);
+            drawCropRegion(canvas, topCrop, mPaintRect);
         }
     }
 
@@ -61,23 +63,23 @@ public class ResultView extends ImageView {
         mPaintGrid.setAntiAlias(true);
     }
 
-    private void drawCropRegion(Canvas canvas, SmartCrop.CropRegion cropRegion, Paint paint) {
+    private void drawCropRegion(Canvas canvas, CropRegion cropRegion, Paint paint) {
         int width = getWidth();
         int height = getHeight();
-        float fx = width * cropRegion.x;
-        float fy = height * cropRegion.y;
-        float fw = width * cropRegion.width;
-        float fh = height * cropRegion.height;
+        float fx = width * cropRegion.getX();
+        float fy = height * cropRegion.getY();
+        float fw = width * cropRegion.getWidth();
+        float fh = height * cropRegion.getHeight();
         canvas.drawRect(fx, fy, fx + fw, fy + fh, paint);
     }
 
-    private void drawGrid(Canvas canvas, SmartCrop.CropRegion cropRegion, Paint paint) {
+    private void drawGrid(Canvas canvas, CropRegion cropRegion, Paint paint) {
         int width = getWidth();
         int height = getHeight();
-        float fx = width * cropRegion.x;
-        float fy = height * cropRegion.y;
-        float f3w = width * cropRegion.width / 3f;
-        float f3h = height * cropRegion.height / 3f;
+        float fx = width * cropRegion.getX();
+        float fy = height * cropRegion.getY();
+        float f3w = width * cropRegion.getWidth() / 3f;
+        float f3h = height * cropRegion.getHeight() / 3f;
         float[] points = {
                 fx + f3w * 1, fy, fx + f3w * 1, fy + f3h * 3,
                 fx + f3w * 2, fy, fx + f3w * 2, fy + f3h * 3,
