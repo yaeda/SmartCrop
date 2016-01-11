@@ -41,13 +41,16 @@ public class SmartCrop {
 
     static public class Builder {
 
-        private float mMinScale = 0.9f;
-        private boolean mShouldOutputScoreMap = false;
+        private float mMinScale;
+        private boolean mShouldOutputScoreMap;
 
-        public Builder() {}
+        public Builder() {
+            mMinScale = 0.9f;
+            mShouldOutputScoreMap = false;
+        }
 
         public Builder setMinScale(float minScale) {
-            this.mMinScale = minScale;
+            mMinScale = minScale;
             return this;
         }
 
@@ -63,8 +66,8 @@ public class SmartCrop {
     }
 
     private SmartCrop(Builder builder) {
-        mMinScale = builder.mMinScale;
-        mShouldOutputScoreMap = builder.mShouldOutputScoreMap;
+        this.mMinScale = builder.mMinScale;
+        this.mShouldOutputScoreMap = builder.mShouldOutputScoreMap;
     }
 
     public CropResult crop(Frame frame, float aspect) {

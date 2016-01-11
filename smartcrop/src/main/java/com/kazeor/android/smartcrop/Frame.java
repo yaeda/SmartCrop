@@ -28,9 +28,9 @@ public class Frame {
         private Bitmap mScoreMap;
 
         public Builder() {
-            this.mBitmap = null;
-            this.mOrientation = Orientation.DEGREE_0;
-            this.mScoreMap = null;
+            mBitmap = null;
+            mOrientation = Orientation.DEGREE_0;
+            mScoreMap = null;
         }
 
         public Builder(Frame frame) {
