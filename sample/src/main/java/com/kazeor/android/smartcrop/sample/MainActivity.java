@@ -187,8 +187,12 @@ public class MainActivity extends AppCompatActivity {
                                     .setOrientation(orientation)
                                     .build();
                             cropResult1by1 = smartcrop.crop(frame, 1);
-                            cropResult16by9 = smartcrop.crop(frame, 16f / 9f);
-                            cropResult9by16 = smartcrop.crop(frame, 9f / 16f);
+
+                            Frame frameWithMap = new Frame.Builder(frame)
+                                    .setScoreMap(cropResult1by1.getScoreMap())
+                                    .build();
+                            cropResult16by9 = smartcrop.crop(frameWithMap, 16f / 9f);
+                            cropResult9by16 = smartcrop.crop(frameWithMap, 9f / 16f);
                         }
 
                         CropInfo cropInfo = new CropInfo();

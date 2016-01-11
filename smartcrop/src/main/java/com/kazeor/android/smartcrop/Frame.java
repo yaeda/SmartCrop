@@ -21,11 +21,23 @@ public class Frame {
 
     public static class Builder {
 
-        private Bitmap mBitmap = null;
+        private Bitmap mBitmap;
 
-        private Orientation mOrientation = Orientation.DEGREE_0;
+        private Orientation mOrientation;
 
-        public Builder() {}
+        private Bitmap mScoreMap;
+
+        public Builder() {
+            this.mBitmap = null;
+            this.mOrientation = Orientation.DEGREE_0;
+            this.mScoreMap = null;
+        }
+
+        public Builder(Frame frame) {
+            this.mBitmap = frame.mBitmap;
+            this.mOrientation = frame.mOrientation;
+            this.mScoreMap = frame.mScoreMap;
+        }
 
         public Builder setBitmap(Bitmap bitmap) {
             mBitmap = bitmap;
@@ -34,6 +46,11 @@ public class Frame {
 
         public Builder setOrientation(Orientation orientation) {
             mOrientation = orientation;
+            return this;
+        }
+
+        public Builder setScoreMap(Bitmap scoreMap) {
+            mScoreMap = scoreMap;
             return this;
         }
 
@@ -50,8 +67,9 @@ public class Frame {
     private Bitmap mScoreMap;
 
     private Frame(Builder builder) {
-        mBitmap = builder.mBitmap;
-        mOrientation = builder.mOrientation;
+        this.mBitmap = builder.mBitmap;
+        this.mOrientation = builder.mOrientation;
+        this.mScoreMap = builder.mScoreMap;
     }
 
     public Bitmap getBitmap() {

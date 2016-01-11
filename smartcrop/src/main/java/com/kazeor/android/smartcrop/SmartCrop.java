@@ -77,7 +77,13 @@ public class SmartCrop {
         int width = image.getWidth();
         int height = image.getHeight();
 
-        Bitmap scoreMapBitmap = createScoreMap(image);
+        Bitmap scoreMapBitmap;
+        if (frame.hasScoreMap()) {
+            scoreMapBitmap = frame.getScoreMap();
+        } else {
+            scoreMapBitmap = createScoreMap(image);
+        }
+
         SparseArray<RectF> cropRects = createCropRects(width, height, rotatedAspect);
         SparseArray<CropRegion> cropRegions = createCropRegions(cropRects, scoreMapBitmap, width, height);
 
