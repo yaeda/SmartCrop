@@ -69,20 +69,19 @@ public class OptionTest extends InstrumentationTestCase {
         );
     }
 
-    public void testOutputScoreMap_Disabled() throws Exception {
+    public void testOutputScoreMap() throws Exception {
+        // Disable
         SmartCrop smartcrop = new SmartCrop.Builder()
                 .build();
         CropResult cropResult = smartcrop.crop(frame, 1);
-
         assertNull(cropResult.getScoreMap());
-    }
 
-    public void testOutputScoreMap_Enabled() throws Exception {
-        SmartCrop smartcrop = new SmartCrop.Builder()
+        // Enable
+        smartcrop = new SmartCrop.Builder()
                 .shouldOutputScoreMap()
                 .build();
-        CropResult cropResult = smartcrop.crop(frame, 1);
-
+        cropResult = smartcrop.crop(frame, 1);
         assertNotNull(cropResult.getScoreMap());
     }
+
 }
