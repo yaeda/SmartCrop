@@ -149,7 +149,9 @@ public class SmartCrop {
         Bitmap scoreImage = Bitmap.createScaledBitmap(outputImage, scaledWidth, scaledHeight, false);
 
         // release buffer
-        outputImage.recycle();
+        if (outputImage != scoreImage) {
+            outputImage.recycle();
+        }
 
         return scoreImage;
     }
