@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
+import com.kazeor.android.smartcrop.CropResult;
 import com.kazeor.android.smartcrop.Frame;
 import com.kazeor.android.smartcrop.SmartCrop;
 
@@ -174,9 +175,9 @@ public class MainActivity extends AppCompatActivity {
                                 BitmapUtils.SIZE_VGA);
 
                         // crop
-                        SmartCrop.CropResult cropResult1by1 = null;
-                        SmartCrop.CropResult cropResult16by9 = null;
-                        SmartCrop.CropResult cropResult9by16 = null;
+                        CropResult cropResult1by1 = null;
+                        CropResult cropResult16by9 = null;
+                        CropResult cropResult9by16 = null;
                         if (bitmap != null) {
                             SmartCrop smartcrop = new SmartCrop.Builder()
                                     .shouldOutputScoreMap()
@@ -186,8 +187,12 @@ public class MainActivity extends AppCompatActivity {
                                     .setOrientation(orientation)
                                     .build();
                             cropResult1by1 = smartcrop.crop(frame, 1);
-                            cropResult16by9 = smartcrop.crop(frame, 16f / 9f);
-                            cropResult9by16 = smartcrop.crop(frame, 9f / 16f);
+
+                            Frame frameWithMap = new Frame.Builder(frame)
+                                    .setScoreMap(cropResult1by1.getScoreMap())
+                                    .build();
+                            cropResult16by9 = smartcrop.crop(frameWithMap, 16f / 9f);
+                            cropResult9by16 = smartcrop.crop(frameWithMap, 9f / 16f);
                         }
 
                         CropInfo cropInfo = new CropInfo();

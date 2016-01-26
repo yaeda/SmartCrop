@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.kazeor.android.smartcrop.CropResult;
 import com.kazeor.android.smartcrop.Frame;
-import com.kazeor.android.smartcrop.SmartCrop;
 import com.kazeor.android.smartcrop.sample.view.ResultView;
 
 import java.util.ArrayList;
@@ -47,21 +47,21 @@ public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
                 getContext().getContentResolver(),
                 cropInfo.mediaId, MediaStore.Images.Thumbnails.MINI_KIND, null);
 
-        SmartCrop.CropResult cropResult;
+        CropResult cropResult;
         Bitmap scoreBitmap;
         switch (mAspect) {
             default:
             case SQUARE:
                 cropResult = cropInfo.cropResultSquare;
-                scoreBitmap = cropInfo.cropResultSquare.scoreMap;
+                scoreBitmap = cropInfo.cropResultSquare.getScoreMap();
                 break;
             case LANDSCAPE:
                 cropResult = cropInfo.cropResultLandscape;
-                scoreBitmap = cropInfo.cropResultLandscape.scoreMap;
+                scoreBitmap = cropInfo.cropResultLandscape.getScoreMap();
                 break;
             case PORTRAIT:
                 cropResult = cropInfo.cropResultPortrait;
-                scoreBitmap = cropInfo.cropResultPortrait.scoreMap;
+                scoreBitmap = cropInfo.cropResultPortrait.getScoreMap();
                 break;
         }
 
