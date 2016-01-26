@@ -25,10 +25,11 @@ public class SmartCrop {
     private float mSaturationWeight = 0.3f;
 
     // step * minscale rounded down to the next power of two should be good
-    private int mScoreDownSample = 8;
+    //private int mScoreDownSample = 8;
+    private int mScoreMapSize;
     private float mStep = 8f;
     private float mScaleStep = 0.1f;
-    private float mMinScale = 0.9f;
+    private float mMinScale;
     private float mMaxScale = 1.0f;
 
     private float mEdgeRadius = 0.4f;
@@ -37,20 +38,27 @@ public class SmartCrop {
     private boolean mRuleOfThirds = true;
     //private boolean mPrescale = true;
 
-    private boolean mShouldOutputScoreMap = false;
+    private boolean mShouldOutputScoreMap;
 
     static public class Builder {
 
         private float mMinScale;
+        private int mScoreMapSize;
         private boolean mShouldOutputScoreMap;
 
         public Builder() {
             mMinScale = 0.9f;
+            mScoreMapSize = 160 * 120;
             mShouldOutputScoreMap = false;
         }
 
         public Builder setMinScale(float minScale) {
             mMinScale = minScale;
+            return this;
+        }
+
+        public Builder setScoreMapSize(int size) {
+            mScoreMapSize = size;
             return this;
         }
 
@@ -67,6 +75,7 @@ public class SmartCrop {
 
     private SmartCrop(Builder builder) {
         this.mMinScale = builder.mMinScale;
+        this.mScoreMapSize = builder.mScoreMapSize;
         this.mShouldOutputScoreMap = builder.mShouldOutputScoreMap;
     }
 
@@ -132,10 +141,11 @@ public class SmartCrop {
     private Bitmap createScoreMap(Bitmap image) {
         int width = image.getWidth();
         int height = image.getHeight();
+        int area = width * height;
 
         // allocate buffer
-        int[] inputBuffer = new int[width * height];
-        int[] outputBuffer = new int[width * height];
+        int[] inputBuffer = new int[area];
+        int[] outputBuffer = new int[area];
         image.getPixels(inputBuffer, 0, width, 0, 0, width, height);
         image.getPixels(outputBuffer, 0, width, 0, 0, width, height);
 
@@ -144,8 +154,9 @@ public class SmartCrop {
         saturationDetect(width, height, inputBuffer, outputBuffer);
 
         Bitmap outputImage = Bitmap.createBitmap(outputBuffer, 0, width, width, height, Bitmap.Config.ARGB_8888);
-        int scaledWidth = (int)Math.ceil((double)width / mScoreDownSample);
-        int scaledHeight = (int)Math.ceil((double)height / mScoreDownSample);
+        float scale = (float)Math.sqrt((double)mScoreMapSize / (double)area);
+        int scaledWidth = Math.round(width * scale);
+        int scaledHeight = Math.round(height * scale);
         Bitmap scoreImage = Bitmap.createScaledBitmap(outputImage, scaledWidth, scaledHeight, false);
 
         // release buffer
