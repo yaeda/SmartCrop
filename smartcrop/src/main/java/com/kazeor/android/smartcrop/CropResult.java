@@ -14,15 +14,15 @@ public class CropResult {
         this.scoreMap = scoreMap;
     }
 
-    public CropRegion getTopCrop() {
+    public CropRegion topCrop() {
         return topCrop;
     }
 
-    public SparseArray<CropRegion> getCrops() {
+    public SparseArray<CropRegion> crops() {
         return crops;
     }
 
-    public Bitmap getScoreMap() {
+    public Bitmap scoreMap() {
         return scoreMap;
     }
 }

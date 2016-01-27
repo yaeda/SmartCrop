@@ -183,13 +183,13 @@ public class MainActivity extends AppCompatActivity {
                                     .shouldOutputScoreMap()
                                     .build();
                             Frame frame = new Frame.Builder()
-                                    .setBitmap(bitmap)
-                                    .setOrientation(orientation)
+                                    .bitmap(bitmap)
+                                    .orientation(orientation)
                                     .build();
                             cropResult1by1 = smartcrop.crop(frame, 1);
 
                             Frame frameWithMap = new Frame.Builder(frame)
-                                    .setScoreMap(cropResult1by1.getScoreMap())
+                                    .scoreMap(cropResult1by1.scoreMap())
                                     .build();
                             cropResult16by9 = smartcrop.crop(frameWithMap, 16f / 9f);
                             cropResult9by16 = smartcrop.crop(frameWithMap, 9f / 16f);

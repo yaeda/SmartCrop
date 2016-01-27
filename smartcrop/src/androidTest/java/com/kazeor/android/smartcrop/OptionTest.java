@@ -22,11 +22,11 @@ public class OptionTest extends InstrumentationTestCase {
         super.setUp();
         TestSet testSet = AssetUtil.loadTestSet(getResources(), "test_monkey.json");
         Bitmap bitmap = AssetUtil.loadTestBitmap(getResources(), testSet.filename);
-        frame = new Frame.Builder().setBitmap(bitmap).build();
+        frame = new Frame.Builder().bitmap(bitmap).build();
     }
 
     public void tearDown() throws Exception {
-        frame.getBitmap().recycle();
+        frame.bitmap().recycle();
     }
 
     // crop should be something sane
@@ -34,10 +34,10 @@ public class OptionTest extends InstrumentationTestCase {
         SmartCrop smartcrop = new SmartCrop.Builder().build();
         CropResult cropResult = smartcrop.crop(frame, 1);
 
-        Bitmap bitmap = frame.getBitmap();
+        Bitmap bitmap = frame.bitmap();
         assertEquals(
-                bitmap.getWidth() * cropResult.getTopCrop().getWidth(),
-                bitmap.getHeight() * cropResult.getTopCrop().getHeight()
+                bitmap.getWidth() * cropResult.topCrop().width(),
+                bitmap.getHeight() * cropResult.topCrop().height()
         );
     }
 
@@ -46,11 +46,11 @@ public class OptionTest extends InstrumentationTestCase {
         SmartCrop smartcrop = new SmartCrop.Builder().build();
         CropResult cropResult = smartcrop.crop(frame, aspect);
 
-        Bitmap bitmap = frame.getBitmap();
+        Bitmap bitmap = frame.bitmap();
         assertEquals(
                 aspect,
-                (bitmap.getWidth() * cropResult.getTopCrop().getWidth()) /
-                        (bitmap.getHeight() * cropResult.getTopCrop().getHeight()),
+                (bitmap.getWidth() * cropResult.topCrop().width()) /
+                        (bitmap.getHeight() * cropResult.topCrop().height()),
                 ASSERT_FLOAT_DELTA
         );
     }
@@ -60,11 +60,11 @@ public class OptionTest extends InstrumentationTestCase {
         SmartCrop smartcrop = new SmartCrop.Builder().build();
         CropResult cropResult = smartcrop.crop(frame, aspect);
 
-        Bitmap bitmap = frame.getBitmap();
+        Bitmap bitmap = frame.bitmap();
         assertEquals(
                 aspect,
-                (bitmap.getWidth() * cropResult.getTopCrop().getWidth()) /
-                        (bitmap.getHeight() * cropResult.getTopCrop().getHeight()),
+                (bitmap.getWidth() * cropResult.topCrop().width()) /
+                        (bitmap.getHeight() * cropResult.topCrop().height()),
                 ASSERT_FLOAT_DELTA
         );
     }
@@ -74,14 +74,14 @@ public class OptionTest extends InstrumentationTestCase {
         SmartCrop smartcrop = new SmartCrop.Builder()
                 .build();
         CropResult cropResult = smartcrop.crop(frame, 1);
-        assertNull(cropResult.getScoreMap());
+        assertNull(cropResult.scoreMap());
 
         // Enable
         smartcrop = new SmartCrop.Builder()
                 .shouldOutputScoreMap()
                 .build();
         cropResult = smartcrop.crop(frame, 1);
-        assertNotNull(cropResult.getScoreMap());
+        assertNotNull(cropResult.scoreMap());
     }
 
 }

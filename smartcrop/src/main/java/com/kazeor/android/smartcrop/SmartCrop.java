@@ -7,61 +7,61 @@ import android.util.SparseArray;
 
 public class SmartCrop {
     // detail
-    private float mDetailWeight = 0.2f;
+    private float detailWeight = 0.2f;
 
     // skin
-    private float[] mSkinColor = {0.78f, 0.57f, 0.44f};
-    private float mSkinBias = 0.01f;
-    private float mSkinBrightnessMin = 0.2f;
-    private float mSkinBrightnessMax = 1.0f;
-    private float mSkinThreshold = 0.8f;
-    private float mSkinWeight = 1.8f;
+    private float[] skinColor = {0.78f, 0.57f, 0.44f};
+    private float skinBias = 0.01f;
+    private float skinBrightnessMin = 0.2f;
+    private float skinBrightnessMax = 1.0f;
+    private float skinThreshold = 0.8f;
+    private float skinWeight = 1.8f;
 
     // saturation
-    private float mSaturationBrightnessMin = 0.05f;
-    private float mSaturationBrightnessMax = 0.9f;
-    private float mSaturationThreshold = 0.4f;
-    private float mSaturationBias = 0.2f;
-    private float mSaturationWeight = 0.3f;
+    private float saturationBrightnessMin = 0.05f;
+    private float saturationBrightnessMax = 0.9f;
+    private float saturationThreshold = 0.4f;
+    private float saturationBias = 0.2f;
+    private float saturationWeight = 0.3f;
 
     // step * minscale rounded down to the next power of two should be good
-    private int mScoreMapSize;
-    private float mStep = 8f;
-    private float mScaleStep = 0.1f;
-    private float mMinScale;
-    private float mMaxScale = 1.0f;
+    private int scoreMapSize;
+    private float step = 8f;
+    private float scaleStep = 0.1f;
+    private float minScale;
+    private float maxScale = 1.0f;
 
-    private float mEdgeRadius = 0.4f;
-    private float mEdgeWeight = -20.0f;
-    private float mOutsideImportance = -0.5f;
-    private boolean mRuleOfThirds = true;
+    private float edgeRadius = 0.4f;
+    private float edgeWeight = -20.0f;
+    private float outsideImportance = -0.5f;
+    private boolean ruleOfThirds = true;
 
-    private boolean mShouldOutputScoreMap;
+    private boolean shouldOutputScoreMap;
 
     static public class Builder {
 
-        private float mMinScale;
-        private int mScoreMapSize;
-        private boolean mShouldOutputScoreMap;
+        private float minScale;
+        private int scoreMapSize;
+        private boolean shouldOutputScoreMap;
 
         public Builder() {
-            mMinScale = 0.9f;
-            mScoreMapSize = 160 * 120;
-            mShouldOutputScoreMap = false;
+            minScale = 0.9f;
+            scoreMapSize = 160 * 120;
+            shouldOutputScoreMap = false;
         }
 
-        public Builder setMinScale(float minScale) {
-            mMinScale = minScale;
+        public Builder minScale(float minScale) {
+            this.minScale = minScale;
             return this;
         }
 
-        public Builder setScoreMapSize(int size) {
-            mScoreMapSize = size;
+        public Builder scoreMapSize(int size) {
+            scoreMapSize = size;
             return this;
         }
 
         public Builder shouldOutputScoreMap() {
-            mShouldOutputScoreMap = true;
+            shouldOutputScoreMap = true;
             return this;
         }
 
@@ -72,24 +72,24 @@ public class SmartCrop {
     }
 
     private SmartCrop(Builder builder) {
-        this.mMinScale = builder.mMinScale;
-        this.mScoreMapSize = builder.mScoreMapSize;
-        this.mShouldOutputScoreMap = builder.mShouldOutputScoreMap;
+        this.minScale = builder.minScale;
+        this.scoreMapSize = builder.scoreMapSize;
+        this.shouldOutputScoreMap = builder.shouldOutputScoreMap;
     }
 
     public CropResult crop(Frame frame, float aspect) {
         float rotatedAspect = aspect;
-        if (frame.getOrientation().getDegree() % 180 != 0) {
+        if (frame.orientation().getDegree() % 180 != 0) {
             rotatedAspect = 1 / aspect;
         }
 
-        Bitmap image = frame.getBitmap();
+        Bitmap image = frame.bitmap();
         int width = image.getWidth();
         int height = image.getHeight();
 
         Bitmap scoreMapBitmap;
         if (frame.hasScoreMap()) {
-            scoreMapBitmap = frame.getScoreMap();
+            scoreMapBitmap = frame.scoreMap();
         } else {
             scoreMapBitmap = createScoreMap(image);
         }
@@ -102,7 +102,7 @@ public class SmartCrop {
         int numCrops = cropRegions.size();
         for (int i = 0; i < numCrops; i++) {
             CropRegion cropRegion = cropRegions.valueAt(i);
-            float score = cropRegion.getScore();
+            float score = cropRegion.score();
             if (score > topScore) {
                 topCrop = cropRegion;
                 topScore = score;
@@ -111,7 +111,7 @@ public class SmartCrop {
 
         // result
         CropResult cropResult;
-        if (mShouldOutputScoreMap) {
+        if (shouldOutputScoreMap) {
             cropResult = new CropResult(topCrop, cropRegions, scoreMapBitmap);
         } else {
             cropResult = new CropResult(topCrop, cropRegions, null);
@@ -120,8 +120,8 @@ public class SmartCrop {
 
         // rotate result with aspect
         for (int i = 0; i < numCrops; i++) {
-            CropRegion cropRegion = cropResult.getCrops().valueAt(i);
-            cropRegion.rotate(frame.getOrientation().getDegree());
+            CropRegion cropRegion = cropResult.crops().valueAt(i);
+            cropRegion.rotate(frame.orientation().getDegree());
         }
 
         return cropResult;
@@ -143,7 +143,7 @@ public class SmartCrop {
         saturationDetect(width, height, inputBuffer, outputBuffer);
 
         Bitmap outputImage = Bitmap.createBitmap(outputBuffer, 0, width, width, height, Bitmap.Config.ARGB_8888);
-        float scale = (float)Math.sqrt((double)mScoreMapSize / (double)area);
+        float scale = (float)Math.sqrt((double) scoreMapSize / (double)area);
         int scaledWidth = Math.round(width * scale);
         int scaledHeight = Math.round(height * scale);
         Bitmap scoreImage = Bitmap.createScaledBitmap(outputImage, scaledWidth, scaledHeight, false);
@@ -186,10 +186,10 @@ public class SmartCrop {
                 float lightness = cie(r, g, b) / 255f;
                 float skin = skinColor(r, g, b);
                 int outValue = 0;
-                if (skin > mSkinThreshold &&
-                        lightness >= mSkinBrightnessMin &&
-                        lightness <= mSkinBrightnessMax) {
-                    outValue = Math.round((skin - mSkinThreshold) * (255f / (1f - mSkinThreshold)));
+                if (skin > skinThreshold &&
+                        lightness >= skinBrightnessMin &&
+                        lightness <= skinBrightnessMax) {
+                    outValue = Math.round((skin - skinThreshold) * (255f / (1f - skinThreshold)));
                 }
 
                 // set output
@@ -245,11 +245,11 @@ public class SmartCrop {
                 float lightness = cie(r, g, b) / 255f;
                 float saturation = saturation(r, g, b);
                 int outValue = 0;
-                if (saturation > mSaturationThreshold &&
-                        lightness >= mSaturationBrightnessMin &&
-                        lightness <= mSaturationBrightnessMax) {
-                    outValue = Math.round((saturation - mSaturationThreshold) *
-                            (255f / (1f - mSaturationThreshold)));
+                if (saturation > saturationThreshold &&
+                        lightness >= saturationBrightnessMin &&
+                        lightness <= saturationBrightnessMax) {
+                    outValue = Math.round((saturation - saturationThreshold) *
+                            (255f / (1f - saturationThreshold)));
                 }
 
                 // set output
@@ -272,9 +272,9 @@ public class SmartCrop {
 
         SparseArray<RectF> crops = new SparseArray<>();
         int key = 0;
-        for (float scale = mMaxScale; scale >= mMinScale; scale -= mScaleStep) {
-            for (float y = 0f; y + cropHeight * scale <= height; y += mStep) {
-                for (float x = 0f; x + cropWidth * scale <= width; x += mStep){
+        for (float scale = maxScale; scale >= minScale; scale -= scaleStep) {
+            for (float y = 0f; y + cropHeight * scale <= height; y += step) {
+                for (float x = 0f; x + cropWidth * scale <= width; x += step){
                     crops.append(key++,
                             new RectF(x / width,
                                     y / height,
@@ -305,19 +305,19 @@ public class SmartCrop {
                 float importanceValue = importance(crop, relX, relY);
                 float detail = g / 255f;
                 detailScore += detail * importanceValue;
-                skinScore += r / 255f * (detail + mSkinBias) * importanceValue;
-                saturationScore += b / 255f * (detail + mSaturationBias) * importanceValue;
+                skinScore += r / 255f * (detail + skinBias) * importanceValue;
+                saturationScore += b / 255f * (detail + saturationBias) * importanceValue;
                 p++;
             }
         }
 
-        float totalScore =(detailScore * mDetailWeight + skinScore * mSkinWeight + saturationScore * mSaturationWeight);
+        float totalScore =(detailScore * detailWeight + skinScore * skinWeight + saturationScore * saturationWeight);
         return totalScore / (crop.width() * crop.height());
     }
 
     private float importance(RectF crop, float x, float y) {
         if (x < crop.left || x >= crop.right || y < crop.top || y >= crop.bottom) {
-            return mOutsideImportance;
+            return outsideImportance;
         }
 
         float sx = (x - crop.left) / crop.width();
@@ -325,11 +325,11 @@ public class SmartCrop {
         float px = Math.abs(0.5f - sx) * 2;
         float py = Math.abs(0.5f - sy) * 2;
         // distance from edge
-        float dx = Math.max(px - 1f + mEdgeRadius, 0);
-        float dy = Math.max(py - 1f + mEdgeRadius, 0);
-        float d = (dx * dx + dy * dy) * mEdgeWeight;
+        float dx = Math.max(px - 1f + edgeRadius, 0);
+        float dy = Math.max(py - 1f + edgeRadius, 0);
+        float d = (dx * dx + dy * dy) * edgeWeight;
         float s = 1.41f - (float)Math.sqrt(px * px + py * py);
-        if (mRuleOfThirds) {
+        if (ruleOfThirds) {
             s += Math.max(0, s + d + 0.5f) * 1.2f * (thirds(px) + thirds(py));
         }
         return s + d;
@@ -345,9 +345,9 @@ public class SmartCrop {
 
     private float skinColor(int r, int g, int b) {
         float mag = (float)Math.sqrt(r * r + g * g + b * b);
-        float rd = (r / mag - mSkinColor[0]);
-        float gd = (g / mag - mSkinColor[1]);
-        float bd = (b / mag - mSkinColor[2]);
+        float rd = (r / mag - skinColor[0]);
+        float gd = (g / mag - skinColor[1]);
+        float bd = (b / mag - skinColor[2]);
         float d = (float)Math.sqrt(rd * rd + gd * gd + bd * bd);
         return 1 - d;
     }

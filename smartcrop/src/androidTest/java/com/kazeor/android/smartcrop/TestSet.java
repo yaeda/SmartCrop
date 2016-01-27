@@ -11,10 +11,10 @@ public class TestSet {
         public float height;
 
         public boolean isInsideOf(CropRegion region) {
-            boolean testStartX = region.getX() <= this.x;
-            boolean testStartY = region.getY() <= this.y;
-            boolean testEndX = region.getX() + region.getWidth() >= this.x + this.width;
-            boolean testEndY = region.getY() + region.getHeight() >= this.y + this.height;
+            boolean testStartX = region.x() <= this.x;
+            boolean testStartY = region.y() <= this.y;
+            boolean testEndX = region.x() + region.width() >= this.x + this.width;
+            boolean testEndY = region.y() + region.height() >= this.y + this.height;
             return testStartX && testStartY && testEndX && testEndY;
         }
     }

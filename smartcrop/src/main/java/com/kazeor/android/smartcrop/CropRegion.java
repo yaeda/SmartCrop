@@ -15,23 +15,23 @@ public class CropRegion {
         this.score = score;
     }
 
-    public float getX() {
+    public float x() {
         return x;
     }
 
-    public float getY() {
+    public float y() {
         return y;
     }
 
-    public float getWidth() {
+    public float width() {
         return width;
     }
 
-    public float getHeight() {
+    public float height() {
         return height;
     }
 
-    public float getScore() {
+    public float score() {
         return score;
     }
 

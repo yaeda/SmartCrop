@@ -53,15 +53,15 @@ public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
             default:
             case SQUARE:
                 cropResult = cropInfo.cropResultSquare;
-                scoreBitmap = cropInfo.cropResultSquare.getScoreMap();
+                scoreBitmap = cropInfo.cropResultSquare.scoreMap();
                 break;
             case LANDSCAPE:
                 cropResult = cropInfo.cropResultLandscape;
-                scoreBitmap = cropInfo.cropResultLandscape.getScoreMap();
+                scoreBitmap = cropInfo.cropResultLandscape.scoreMap();
                 break;
             case PORTRAIT:
                 cropResult = cropInfo.cropResultPortrait;
-                scoreBitmap = cropInfo.cropResultPortrait.getScoreMap();
+                scoreBitmap = cropInfo.cropResultPortrait.scoreMap();
                 break;
         }
 

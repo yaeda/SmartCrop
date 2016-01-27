@@ -21,36 +21,36 @@ public class Frame {
 
     public static class Builder {
 
-        private Bitmap mBitmap;
+        private Bitmap bitmap;
 
-        private Orientation mOrientation;
+        private Orientation orientation;
 
-        private Bitmap mScoreMap;
+        private Bitmap scoreMap;
 
         public Builder() {
-            mBitmap = null;
-            mOrientation = Orientation.DEGREE_0;
-            mScoreMap = null;
+            bitmap = null;
+            orientation = Orientation.DEGREE_0;
+            scoreMap = null;
         }
 
         public Builder(Frame frame) {
-            this.mBitmap = frame.mBitmap;
-            this.mOrientation = frame.mOrientation;
-            this.mScoreMap = frame.mScoreMap;
+            this.bitmap = frame.bitmap;
+            this.orientation = frame.orientation;
+            this.scoreMap = frame.scoreMap;
         }
 
-        public Builder setBitmap(Bitmap bitmap) {
-            mBitmap = bitmap;
+        public Builder bitmap(Bitmap bitmap) {
+            this.bitmap = bitmap;
             return this;
         }
 
-        public Builder setOrientation(Orientation orientation) {
-            mOrientation = orientation;
+        public Builder orientation(Orientation orientation) {
+            this.orientation = orientation;
             return this;
         }
 
-        public Builder setScoreMap(Bitmap scoreMap) {
-            mScoreMap = scoreMap;
+        public Builder scoreMap(Bitmap scoreMap) {
+            this.scoreMap = scoreMap;
             return this;
         }
 
@@ -60,32 +60,32 @@ public class Frame {
 
     }
 
-    private Bitmap mBitmap;
+    private Bitmap bitmap;
 
-    private Orientation mOrientation;
+    private Orientation orientation;
 
-    private Bitmap mScoreMap;
+    private Bitmap scoreMap;
 
     private Frame(Builder builder) {
-        this.mBitmap = builder.mBitmap;
-        this.mOrientation = builder.mOrientation;
-        this.mScoreMap = builder.mScoreMap;
+        this.bitmap = builder.bitmap;
+        this.orientation = builder.orientation;
+        this.scoreMap = builder.scoreMap;
     }
 
-    public Bitmap getBitmap() {
-        return mBitmap;
+    public Bitmap bitmap() {
+        return bitmap;
     }
 
-    public Orientation getOrientation() {
-        return mOrientation;
+    public Orientation orientation() {
+        return orientation;
     }
 
     public boolean hasScoreMap() {
-        return mScoreMap != null;
+        return scoreMap != null;
     }
 
-    public Bitmap getScoreMap() {
-        return mScoreMap;
+    public Bitmap scoreMap() {
+        return scoreMap;
     }
 
 }
