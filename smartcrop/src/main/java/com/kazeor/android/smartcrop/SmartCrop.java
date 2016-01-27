@@ -25,7 +25,6 @@ public class SmartCrop {
     private float mSaturationWeight = 0.3f;
 
     // step * minscale rounded down to the next power of two should be good
-    //private int mScoreDownSample = 8;
     private int mScoreMapSize;
     private float mStep = 8f;
     private float mScaleStep = 0.1f;
@@ -36,7 +35,6 @@ public class SmartCrop {
     private float mEdgeWeight = -20.0f;
     private float mOutsideImportance = -0.5f;
     private boolean mRuleOfThirds = true;
-    //private boolean mPrescale = true;
 
     private boolean mShouldOutputScoreMap;
 
@@ -115,15 +113,6 @@ public class SmartCrop {
         CropResult cropResult;
         if (mShouldOutputScoreMap) {
             cropResult = new CropResult(topCrop, cropRegions, scoreMapBitmap);
-            /*
-            cropResult.scoreMap = Bitmap.createBitmap(
-                    outputBuffer,
-                    0,
-                    width,
-                    width,
-                    height,
-                    Bitmap.Config.ARGB_8888);
-            */
         } else {
             cropResult = new CropResult(topCrop, cropRegions, null);
             scoreMapBitmap.recycle();
