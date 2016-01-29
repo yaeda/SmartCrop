@@ -267,19 +267,20 @@ public class SmartCrop {
 
     private SparseArray<RectF> createCropRects(int width, int height, float aspect) {
         float imageAspect = (float)width / (float)height;
-        float cropWidth = aspect <= imageAspect ? height * aspect : width;
-        float cropHeight = aspect <= imageAspect ? height : width / aspect;
+        float cropWidth = aspect <= imageAspect ? aspect / imageAspect : 1f;
+        float cropHeight = aspect <= imageAspect ? 1f : imageAspect / aspect;
 
         SparseArray<RectF> crops = new SparseArray<>();
         int key = 0;
+        float stepWidth = step / width;
+        float stepHeight = step / height;
         for (float scale = maxScale; scale >= minScale; scale -= scaleStep) {
-            for (float y = 0f; y + cropHeight * scale <= height; y += step) {
-                for (float x = 0f; x + cropWidth * scale <= width; x += step){
+            float scaledCropWidth = cropWidth * scale;
+            float scaledCropHeight = cropHeight * scale;
+            for (float y = 0f; y + scaledCropHeight <= 1f; y += stepHeight) {
+                for (float x = 0f; x + scaledCropWidth <= 1f; x += stepWidth){
                     crops.append(key++,
-                            new RectF(x / width,
-                                    y / height,
-                                    (x + cropWidth * scale) / width,
-                                    (y + cropHeight * scale) / height));
+                            new RectF(x, y, x + scaledCropWidth, y + scaledCropHeight));
                 }
             }
         }
