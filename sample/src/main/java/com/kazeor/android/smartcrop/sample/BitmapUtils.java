@@ -26,11 +26,11 @@ public class BitmapUtils {
             this.height = height;
         }
 
-        public int getWidth() {
+        public int width() {
             return width;
         }
 
-        public int getHeight() {
+        public int height() {
             return height;
         }
     }
@@ -78,8 +78,8 @@ public class BitmapUtils {
         }
 
         Bitmap scaledBitmap;
-        int originalWidth = originalSize.getWidth();
-        int originalHeight = originalSize.getHeight();
+        int originalWidth = originalSize.width();
+        int originalHeight = originalSize.height();
         int originalAreaSize = originalWidth * originalHeight;
         if (originalAreaSize > targetAreaSize) {
             float scale = (float)Math.sqrt((float)originalAreaSize / (float)targetAreaSize);
