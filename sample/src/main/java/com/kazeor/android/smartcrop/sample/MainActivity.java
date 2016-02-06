@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                         Frame.Orientation orientation = Frame.Orientation.DEGREE_0;
                         String[] projection = {MediaStore.Images.Media.ORIENTATION};
                         Cursor cursor = contentResolver.query(uri, projection, null, null, null);
-                        if (cursor.moveToFirst()) {
+                        if (cursor != null && cursor.moveToFirst()) {
                             int index = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION);
                             switch (cursor.getInt(index)) {
                                 default:
@@ -168,7 +168,9 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                             }
                         }
-                        cursor.close();
+                        if (cursor != null) {
+                            cursor.close();
+                        }
 
                         // load bitmap
                         Bitmap bitmap = BitmapUtils.createScaledBitmap(contentResolver, uri,

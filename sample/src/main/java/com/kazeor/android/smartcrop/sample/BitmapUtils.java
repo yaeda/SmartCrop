@@ -6,14 +6,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.net.Uri;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 public class BitmapUtils {
 
+    @SuppressWarnings("unused")
     public static final int SIZE_VGA = 640 * 480;
+    @SuppressWarnings("unused")
     public static final int SIZE_QVGA = 320 * 240;
+    @SuppressWarnings("unused")
     public static final int SIZE_QQVGA = 160 * 120;
 
     private static class Size {
@@ -44,9 +46,7 @@ public class BitmapUtils {
             if (inputStream != null) {
                 inputStream.close();
             }
-        } catch (FileNotFoundException e) { // openInputStream
-            e.printStackTrace();
-        } catch (IOException e) { // close
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -64,9 +64,7 @@ public class BitmapUtils {
             if (inputStream != null) {
                 inputStream.close();
             }
-        } catch (FileNotFoundException e) { // openInputStream
-            e.printStackTrace();
-        } catch (IOException e) { // close
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
