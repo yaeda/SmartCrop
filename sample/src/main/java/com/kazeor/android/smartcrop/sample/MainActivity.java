@@ -9,10 +9,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -37,22 +37,22 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE_FILE_SELECTION = 1;
 
-    private ListView mListView = null;
-    private MenuItem mCropMenu = null;
+    private ListView listView = null;
+    private MenuItem cropMenu = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mListView = (ListView) findViewById(R.id.list);
-        mListView.setAdapter(new CropInfoAdapter(getApplicationContext(), new ArrayList<CropInfo>()));
+        listView = (ListView) findViewById(R.id.list);
+        listView.setAdapter(new CropInfoAdapter(getApplicationContext(), new ArrayList<CropInfo>()));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
-        mCropMenu = menu.findItem(R.id.action_select_aspect);
+        cropMenu = menu.findItem(R.id.action_select_aspect);
         return true;
     }
 
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateAspect(CropInfo.CROP_ASPECT aspect) {
-        if (mCropMenu == null || mListView == null) {
+        if (cropMenu == null || listView == null) {
             return;
         }
 
@@ -104,9 +104,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
 
-        mCropMenu.setIcon(iconId);
-        ((CropInfoAdapter) mListView.getAdapter()).setCropAspect(aspect);
-        mListView.invalidateViews();
+        cropMenu.setIcon(iconId);
+        ((CropInfoAdapter) listView.getAdapter()).setCropAspect(aspect);
+        listView.invalidateViews();
     }
 
     private void requestFileSelection() {
@@ -211,8 +211,8 @@ public class MainActivity extends AppCompatActivity {
                 .subscribe(new Action1<List<CropInfo>>() {
                     @Override
                     public void call(List<CropInfo> results) {
-                        if (mListView != null) {
-                            ((CropInfoAdapter) mListView.getAdapter()).addAll(results);
+                        if (listView != null) {
+                            ((CropInfoAdapter) listView.getAdapter()).addAll(results);
                         }
                         progressDialog.dismiss();
                     }

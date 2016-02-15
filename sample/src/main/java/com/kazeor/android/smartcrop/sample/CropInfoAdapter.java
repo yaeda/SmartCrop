@@ -17,16 +17,14 @@ import java.util.ArrayList;
 
 public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
 
-
-
-    private CropInfo.CROP_ASPECT mAspect = CropInfo.CROP_ASPECT.SQUARE;
+    private CropInfo.CROP_ASPECT aspect = CropInfo.CROP_ASPECT.SQUARE;
 
     public CropInfoAdapter(Context context, ArrayList<CropInfo> infoList) {
         super(context, 0, infoList);
     }
 
     public void setCropAspect(CropInfo.CROP_ASPECT aspect) {
-        mAspect = aspect;
+        this.aspect = aspect;
     }
 
     @Override
@@ -49,7 +47,7 @@ public class CropInfoAdapter extends ArrayAdapter<CropInfo> {
 
         CropResult cropResult;
         Bitmap scoreBitmap;
-        switch (mAspect) {
+        switch (aspect) {
             default:
             case SQUARE:
                 cropResult = cropInfo.cropResultSquare;
