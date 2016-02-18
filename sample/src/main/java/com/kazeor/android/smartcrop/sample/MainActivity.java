@@ -22,13 +22,10 @@ import com.kazeor.android.smartcrop.Frame;
 import com.kazeor.android.smartcrop.SmartCrop;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -139,83 +136,77 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .subscribeOn(Schedulers.computation())
-                .map(new Func1<Uri, CropInfo>() {
-                    @Override
-                    public CropInfo call(Uri documentUri) {
-                        String id = DocumentsContract.getDocumentId(documentUri).split(":")[1];
-                        Uri uri = ContentUris.withAppendedId(
-                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, Long.parseLong(id));
-                        ContentResolver contentResolver = getContentResolver();
+                .map(documentUri -> {
+                    String id = DocumentsContract.getDocumentId(documentUri).split(":")[1];
+                    Uri uri = ContentUris.withAppendedId(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, Long.parseLong(id));
+                    ContentResolver contentResolver = getContentResolver();
 
-                        // Orientation
-                        Frame.Orientation orientation = Frame.Orientation.DEGREE_0;
-                        String[] projection = {MediaStore.Images.Media.ORIENTATION};
-                        Cursor cursor = contentResolver.query(uri, projection, null, null, null);
-                        if (cursor != null && cursor.moveToFirst()) {
-                            int index = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION);
-                            switch (cursor.getInt(index)) {
-                                default:
-                                case 0:
-                                    break;
-                                case 90:
-                                    orientation = Frame.Orientation.DEGREE_90;
-                                    break;
-                                case 180:
-                                    orientation = Frame.Orientation.DEGREE_180;
-                                    break;
-                                case 270:
-                                    orientation = Frame.Orientation.DEGREE_270;
-                                    break;
-                            }
+                    // Orientation
+                    Frame.Orientation orientation = Frame.Orientation.DEGREE_0;
+                    String[] projection = {MediaStore.Images.Media.ORIENTATION};
+                    Cursor cursor = contentResolver.query(uri, projection, null, null, null);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int index = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION);
+                        switch (cursor.getInt(index)) {
+                            default:
+                            case 0:
+                                break;
+                            case 90:
+                                orientation = Frame.Orientation.DEGREE_90;
+                                break;
+                            case 180:
+                                orientation = Frame.Orientation.DEGREE_180;
+                                break;
+                            case 270:
+                                orientation = Frame.Orientation.DEGREE_270;
+                                break;
                         }
-                        if (cursor != null) {
-                            cursor.close();
-                        }
-
-                        // load bitmap
-                        Bitmap bitmap = BitmapUtils.createScaledBitmap(contentResolver, uri,
-                                BitmapUtils.SIZE_VGA);
-
-                        // crop
-                        CropResult cropResult1by1 = null;
-                        CropResult cropResult16by9 = null;
-                        CropResult cropResult9by16 = null;
-                        if (bitmap != null) {
-                            SmartCrop smartcrop = new SmartCrop.Builder()
-                                    .shouldOutputScoreMap()
-                                    .build();
-                            Frame frame = new Frame.Builder()
-                                    .bitmap(bitmap)
-                                    .orientation(orientation)
-                                    .build();
-                            cropResult1by1 = smartcrop.crop(frame, 1);
-
-                            Frame frameWithMap = new Frame.Builder(frame)
-                                    .scoreMap(cropResult1by1.scoreMap())
-                                    .build();
-                            cropResult16by9 = smartcrop.crop(frameWithMap, 16f / 9f);
-                            cropResult9by16 = smartcrop.crop(frameWithMap, 9f / 16f);
-                        }
-
-                        CropInfo cropInfo = new CropInfo();
-                        cropInfo.mediaId = Long.parseLong(id);
-                        cropInfo.orientation = orientation;
-                        cropInfo.cropResultSquare = cropResult1by1;
-                        cropInfo.cropResultLandscape = cropResult16by9;
-                        cropInfo.cropResultPortrait = cropResult9by16;
-                        return cropInfo;
                     }
+                    if (cursor != null) {
+                        cursor.close();
+                    }
+
+                    // load bitmap
+                    Bitmap bitmap = BitmapUtils.createScaledBitmap(contentResolver, uri,
+                            BitmapUtils.SIZE_VGA);
+
+                    // crop
+                    CropResult cropResult1by1 = null;
+                    CropResult cropResult16by9 = null;
+                    CropResult cropResult9by16 = null;
+                    if (bitmap != null) {
+                        SmartCrop smartcrop = new SmartCrop.Builder()
+                                .shouldOutputScoreMap()
+                                .build();
+                        Frame frame = new Frame.Builder()
+                                .bitmap(bitmap)
+                                .orientation(orientation)
+                                .build();
+                        cropResult1by1 = smartcrop.crop(frame, 1);
+
+                        Frame frameWithMap = new Frame.Builder(frame)
+                                .scoreMap(cropResult1by1.scoreMap())
+                                .build();
+                        cropResult16by9 = smartcrop.crop(frameWithMap, 16f / 9f);
+                        cropResult9by16 = smartcrop.crop(frameWithMap, 9f / 16f);
+                    }
+
+                    CropInfo cropInfo = new CropInfo();
+                    cropInfo.mediaId = Long.parseLong(id);
+                    cropInfo.orientation = orientation;
+                    cropInfo.cropResultSquare = cropResult1by1;
+                    cropInfo.cropResultLandscape = cropResult16by9;
+                    cropInfo.cropResultPortrait = cropResult9by16;
+                    return cropInfo;
                 })
                 .toList()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<List<CropInfo>>() {
-                    @Override
-                    public void call(List<CropInfo> results) {
-                        if (listView != null) {
-                            ((CropInfoAdapter) listView.getAdapter()).addAll(results);
-                        }
-                        progressDialog.dismiss();
+                .subscribe(results -> {
+                    if (listView != null) {
+                        ((CropInfoAdapter) listView.getAdapter()).addAll(results);
                     }
+                    progressDialog.dismiss();
                 });
 
     }
