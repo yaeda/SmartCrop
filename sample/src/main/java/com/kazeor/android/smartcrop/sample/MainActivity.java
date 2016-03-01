@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                                 .bitmap(bitmap)
                                 .orientation(orientation)
                                 .build();
-                        cropResult1by1 = smartcrop.crop(frame, 1);
+                        cropResult1by1 = smartcrop.crop(frame, 1f);
 
                         Frame frameWithMap = new Frame.Builder(frame)
                                 .scoreMap(cropResult1by1.scoreMap())
