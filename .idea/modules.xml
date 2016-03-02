@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/SmartCrop.iml" filepath="$PROJECT_DIR$/SmartCrop.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
       <module fileurl="file://$PROJECT_DIR$/smartcrop/smartcrop.iml" filepath="$PROJECT_DIR$/smartcrop/smartcrop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/smartcrop-transformation/smartcrop-transformation.iml" filepath="$PROJECT_DIR$/smartcrop-transformation/smartcrop-transformation.iml" />
     </modules>
   </component>
 </project>

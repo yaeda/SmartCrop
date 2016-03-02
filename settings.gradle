@@ -1,1 +1,1 @@
-include ':sample', ':smartcrop'
+include ':sample', ':smartcrop', ':smartcrop-transformation'
