@@ -12,6 +12,6 @@ test:
     # wait for it to have booted
     - circle-android wait-for-boot
     # run tests  against the emulator.
-    - ./gradlew smartcrop:connectedAndroidTest
+    - ./gradlew connectedAndroidTest
     # copy the test results to the test results directory.
     - cp -r smartcrop/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
