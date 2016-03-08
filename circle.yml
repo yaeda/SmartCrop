@@ -1,3 +1,7 @@
+machine:
+  java:
+    version: oraclejdk8
+
 dependencies:
   pre:
     - echo y | android update sdk --no-ui --all --filter "tools,platform-tools,android-23"
@@ -12,6 +16,6 @@ test:
     # wait for it to have booted
     - circle-android wait-for-boot
     # run tests  against the emulator.
-    - ./gradlew smartcrop:connectedAndroidTest
+    - ./gradlew connectedAndroidTest
     # copy the test results to the test results directory.
     - cp -r smartcrop/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS

@@ -12,9 +12,10 @@ CropResult cropResult = smartCrop.crop(frame, aspect);
 
 with Picasso
 ```java
-float aspect = 16f / 9f;
+int width = 100;
+int height = 100;
 Picasso.with(mContext)
   .load(R.drawable.demo)
-  .transform(new SmartCropTransformation(aspect))
+  .transform(new SmartCropTransformation(width, height))
   .into((ImageView) findViewById(R.id.image));
 ```
