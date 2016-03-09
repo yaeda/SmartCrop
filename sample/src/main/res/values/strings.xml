@@ -5,5 +5,8 @@
     <string name="label_crop_square">Square</string>
     <string name="label_crop_portrait">Portrait</string>
     <string name="label_crop_landscape">Landscape</string>
-    <string name="message_crop_progress">Now Cropping...</string>
+    <string name="message_crop_progress">Now Cropping…</string>
+    <string name="action_select_mode">Select Mode</string>
+    <string name="label_mode_debug">Debug</string>
+    <string name="label_mode_crop">Crop</string>
 </resources>

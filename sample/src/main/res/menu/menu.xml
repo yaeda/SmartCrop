@@ -22,6 +22,22 @@
         </menu>
     </item>
     <item
+        android:id="@+id/action_select_mode"
+        android:title="@string/action_select_mode"
+        android:icon="@drawable/ic_adb_white_24dp"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/label_mode_debug"
+                android:title="@string/label_mode_debug"
+                android:icon="@drawable/ic_adb_black_24dp"/>
+            <item
+                android:id="@+id/label_mode_crop"
+                android:title="@string/label_mode_crop"
+                android:icon="@drawable/ic_crop_black_24dp"/>
+        </menu>
+    </item>
+    <item
         android:id="@+id/action_add"
         android:title="@string/action_add"
         android:icon="@drawable/ic_add_light"

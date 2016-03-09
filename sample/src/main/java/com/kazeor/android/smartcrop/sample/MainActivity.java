@@ -34,8 +34,12 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private static final int REQUEST_CODE_FILE_SELECTION = 1;
 
+    private static final int MODE_DEBUG = 0;
+    private static final int MODE_CROP = 1;
+
     private ListView listView = null;
     private MenuItem cropMenu = null;
+    private MenuItem modeMenu = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
         cropMenu = menu.findItem(R.id.action_select_aspect);
+        modeMenu = menu.findItem(R.id.action_select_mode);
         return true;
     }
 
@@ -67,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.label_crop_portrait:
                 updateAspect(CropInfo.CROP_ASPECT.PORTRAIT);
+                return true;
+            case R.id.label_mode_debug:
+                updateMode(MODE_DEBUG);
+                return true;
+            case R.id.label_mode_crop:
+                updateMode(MODE_CROP);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -104,6 +115,25 @@ public class MainActivity extends AppCompatActivity {
         cropMenu.setIcon(iconId);
         ((CropInfoAdapter) listView.getAdapter()).setCropAspect(aspect);
         listView.invalidateViews();
+    }
+
+    private void updateMode(int mode) {
+        if (modeMenu == null) {
+            return;
+        }
+
+        int iconId;
+        switch (mode) {
+            default:
+            case MODE_DEBUG:
+                iconId = R.drawable.ic_adb_white_24dp;
+                break;
+            case MODE_CROP:
+                iconId = R.drawable.ic_crop_white_24dp;
+                break;
+        }
+
+        modeMenu.setIcon(iconId);
     }
 
     private void requestFileSelection() {
